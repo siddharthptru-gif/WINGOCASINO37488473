@@ -33,8 +33,8 @@ async function register(req, res) {
 
         // Create user first
         const userResult = await query(
-            'INSERT INTO users (username, email, phone, password_hash) VALUES (?, ?, ?, ?)',
-            [username, email, phone || null, hashedPassword]
+            'INSERT INTO users (username, email, phone, password_hash, status) VALUES (?, ?, ?, ?, ?)',
+            [username, email, phone || null, hashedPassword, 'active']
         );
         
         const userId = userResult.insertId;
@@ -105,7 +105,7 @@ async function login(req, res) {
         }
 
         // Verify password
-        const isValidPassword = await comparePassword(password, user.password);
+        const isValidPassword = await comparePassword(password, user.password_hash);
         if (!isValidPassword) {
             return res.status(401).json({ error: 'Invalid credentials' });
         }

@@ -76,13 +76,24 @@ class InMemoryDB {
                 }
                 // Handle INSERT queries
                 else if (sql.toUpperCase().startsWith('INSERT')) {
+                    // Parse column names from SQL
+                    const columnsMatch = sql.match(/INSERT INTO \w+ \(([^)]+)\)/);
+                    let columnNames = [];
+                    if (columnsMatch) {
+                        columnNames = columnsMatch[1].split(',').map(col => col.trim());
+                    }
+                    
                     const insertData = {
                         id: this.getNextId(table),
                         created_at: new Date(),
                         updated_at: new Date(),
                         ...params.reduce((obj, param, index) => {
-                            // This is a very simplified approach - in reality you'd parse the SQL properly
-                            obj[`field_${index}`] = param;
+                            // Map parameter to actual column name if available
+                            if (columnNames[index]) {
+                                obj[columnNames[index]] = param;
+                            } else {
+                                obj[`field_${index}`] = param;
+                            }
                             return obj;
                         }, {})
                     };
