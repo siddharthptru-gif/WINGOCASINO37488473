@@ -17,7 +17,7 @@ class SqliteDatabase {
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     username TEXT UNIQUE NOT NULL,
                     mobile TEXT UNIQUE NOT NULL,
-                    email TEXT,
+                    phone TEXT,
                     password_hash TEXT NOT NULL,
                     status TEXT DEFAULT 'active',
                     kyc_status TEXT DEFAULT 'pending',

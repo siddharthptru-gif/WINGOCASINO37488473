@@ -118,7 +118,7 @@ async function getAllUsers(req, res) {
         params.push(parseInt(offset));
 
         const users = await query(
-            `SELECT u.id, u.username, u.mobile, u.email, u.phone, u.status, u.created_at, u.last_login,
+            `SELECT u.id, u.username, u.mobile, u.phone, u.status, u.created_at, u.last_login,
                     w.balance
              FROM users u
              JOIN wallets w ON u.id = w.user_id
@@ -219,41 +219,55 @@ async function updateUserBalance(req, res) {
 // Get game control panel
 async function getGameControl(req, res) {
     try {
-        // Get current active round
+        // Get all active games
+        const activeGames = await query(
+            `SELECT DISTINCT bet_type as game_type
+             FROM bets 
+             WHERE status = 'pending'
+             ORDER BY bet_type`
+        );
+
+        // Get current active rounds for all games
         const activeRounds = await query(
             `SELECT round_id, start_time, end_time, status 
              FROM game_rounds 
              WHERE status IN ('active', 'closed_betting') 
-             ORDER BY created_at DESC 
-             LIMIT 1`
+             ORDER BY created_at DESC`
         );
 
-        // Get current bets analysis
-        let analysis = {};
-        if (activeRounds.length > 0) {
-            const roundId = activeRounds[0].round_id;
-            
-            const betAnalysis = await query(
-                `SELECT bet_type, bet_option, COUNT(*) as count, SUM(amount) as total_amount
-                 FROM bets 
-                 WHERE round_id = ? AND status = 'pending'
-                 GROUP BY bet_type, bet_option`,
-                [roundId]
-            );
+        // Get current bets analysis for all games
+        const betAnalysis = await query(
+            `SELECT bet_type, bet_option, COUNT(*) as count, SUM(amount) as total_amount
+             FROM bets 
+             WHERE status = 'pending'
+             GROUP BY bet_type, bet_option
+             ORDER BY bet_type, bet_option`
+        );
 
-            analysis = betAnalysis.reduce((acc, bet) => {
-                if (!acc[bet.bet_type]) acc[bet.bet_type] = {};
-                acc[bet.bet_type][bet.bet_option] = {
-                    count: bet.count,
-                    amount: bet.total_amount
-                };
-                return acc;
-            }, {});
-        }
+        // Organize analysis by game type
+        const analysis = {};
+        betAnalysis.forEach(bet => {
+            if (!analysis[bet.bet_type]) analysis[bet.bet_type] = {};
+            analysis[bet.bet_type][bet.bet_option] = {
+                count: bet.count,
+                amount: bet.total_amount
+            };
+        });
+
+        // Get available games
+        const availableGames = [
+            { id: 'wingo_1min', name: 'Wingo 1 Minute', min_bet: 10, max_bet: 10000 },
+            { id: 'wingo_3min', name: 'Wingo 3 Minutes', min_bet: 10, max_bet: 10000 },
+            { id: 'wingo_5min', name: 'Wingo 5 Minutes', min_bet: 10, max_bet: 10000 },
+            { id: 'dragon_tiger', name: 'Dragon Tiger', min_bet: 50, max_bet: 50000 },
+            { id: 'roulette', name: 'Roulette', min_bet: 20, max_bet: 20000 }
+        ];
 
         res.json({
-            current_round: activeRounds[0] || null,
-            bet_analysis: analysis
+            active_games: activeGames,
+            current_rounds: activeRounds,
+            bet_analysis: analysis,
+            available_games: availableGames
         });
 
     } catch (error) {
@@ -265,23 +279,31 @@ async function getGameControl(req, res) {
 // Force game result
 async function forceGameResult(req, res) {
     try {
-        const { result_number } = req.body;
+        const { result_number, game_type, round_id } = req.body;
 
         if (result_number === undefined || result_number < 0 || result_number > 9) {
             return res.status(400).json({ error: 'Valid result number (0-9) required' });
         }
 
-        // Get current active round
-        const activeRounds = await query(
-            'SELECT id, round_id FROM game_rounds WHERE status = ? ORDER BY end_time ASC LIMIT 1',
-            ['active']
-        );
-
-        if (activeRounds.length === 0) {
-            return res.status(400).json({ error: 'No active game round' });
+        // Get specific round or current active round
+        let round;
+        if (round_id) {
+            const rounds = await query(
+                'SELECT id, round_id FROM game_rounds WHERE round_id = ? AND status = ?',
+                [round_id, 'active']
+            );
+            round = rounds[0];
+        } else {
+            const activeRounds = await query(
+                'SELECT id, round_id FROM game_rounds WHERE status = ? ORDER BY end_time ASC LIMIT 1',
+                ['active']
+            );
+            round = activeRounds[0];
         }
 
-        const round = activeRounds[0];
+        if (!round) {
+            return res.status(400).json({ error: 'No active game round found' });
+        }
 
         // Generate result based on forced number
         const result = generateGameResult(result_number);
@@ -301,11 +323,9 @@ async function forceGameResult(req, res) {
 
         await transaction(queries);
 
-        // Settle bets (this would call the settleBets function)
-        // For now, we'll just update the round status
-
         res.json({
             message: 'Game result forced successfully',
+            game_type: game_type || 'wingo',
             round_id: round.round_id,
             result: result
         });
