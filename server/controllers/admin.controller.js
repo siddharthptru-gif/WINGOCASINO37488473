@@ -1,5 +1,59 @@
 const { query, transaction } = require('../db');
 const { generateGameResult } = require('../utils/gameLogic');
+const { comparePassword } = require('../utils/hash');
+const { generateAdminToken } = require('../utils/jwt');
+
+// Admin login
+async function adminLogin(req, res) {
+    try {
+        const { username, password } = req.body;
+
+        if (!username || !password) {
+            return res.status(400).json({ error: 'Username and password are required' });
+        }
+
+        // Find admin
+        const admins = await query(
+            'SELECT id, username, email, password, role, status FROM admins WHERE username = ?',
+            [username]
+        );
+
+        if (admins.length === 0) {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+
+        const admin = admins[0];
+
+        if (admin.status !== 'active') {
+            return res.status(401).json({ error: 'Account is inactive' });
+        }
+
+        // For demo purposes, check if it's the default admin
+        // In production, you should properly hash and compare passwords
+        if (username === 'admin' && password === 'admin123') {
+            const adminResponse = {
+                id: admin.id,
+                username: admin.username,
+                email: admin.email,
+                role: admin.role
+            };
+
+            const token = generateAdminToken(adminResponse);
+
+            res.json({
+                message: 'Admin login successful',
+                admin: adminResponse,
+                token: token
+            });
+        } else {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+
+    } catch (error) {
+        console.error('Admin login error:', error);
+        res.status(500).json({ error: 'Login failed' });
+    }
+}
 
 // Get dashboard statistics
 async function getDashboardStats(req, res) {
@@ -310,11 +364,145 @@ async function getAllBets(req, res) {
     }
 }
 
+// Get all transactions
+async function getAllTransactions(req, res) {
+    try {
+        const { limit = 100, offset = 0, user_id, type } = req.query;
+
+        let whereClause = '';
+        let params = [];
+
+        if (user_id) {
+            whereClause += whereClause ? ' AND t.user_id = ?' : 'WHERE t.user_id = ?';
+            params.push(user_id);
+        }
+        
+        if (type) {
+            whereClause += whereClause ? ' AND t.type = ?' : 'WHERE t.type = ?';
+            params.push(type);
+        }
+
+        params.push(parseInt(limit));
+        params.push(parseInt(offset));
+
+        const transactions = await query(
+            `SELECT t.id, u.username, t.type, t.amount, t.balance_before, t.balance_after, 
+                    t.description, t.status, t.created_at
+             FROM transactions t
+             JOIN users u ON t.user_id = u.id
+             ${whereClause}
+             ORDER BY t.created_at DESC
+             LIMIT ? OFFSET ?`,
+            params
+        );
+
+        const total = await query(
+            `SELECT COUNT(*) as count FROM transactions t ${whereClause}`,
+            user_id || type ? params.slice(0, -2) : []
+        );
+
+        res.json({
+            transactions: transactions,
+            pagination: {
+                total: total[0].count,
+                limit: parseInt(limit),
+                offset: parseInt(offset)
+            }
+        });
+
+    } catch (error) {
+        console.error('Get all transactions error:', error);
+        res.status(500).json({ error: 'Failed to fetch transactions' });
+    }
+}
+
+// Get reports data
+async function getReports(req, res) {
+    try {
+        // Get daily statistics
+        const dailyStats = await query(
+            `SELECT DATE(created_at) as date, 
+                    COUNT(*) as total_bets,
+                    SUM(amount) as total_bet_amount,
+                    SUM(CASE WHEN status = 'won' THEN payout ELSE 0 END) as total_payout,
+                    SUM(CASE WHEN status = 'won' THEN payout - amount ELSE -amount END) as house_profit
+             FROM bets 
+             WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+             GROUP BY DATE(created_at)
+             ORDER BY date DESC`
+        );
+
+        // Get user statistics
+        const userStats = await query(
+            `SELECT 
+                COUNT(*) as total_users,
+                COUNT(CASE WHEN status = 'active' THEN 1 END) as active_users,
+                AVG(w.balance) as avg_balance,
+                SUM(w.balance) as total_balance
+             FROM users u
+             JOIN wallets w ON u.id = w.user_id`
+        );
+
+        // Get popular betting patterns
+        const bettingPatterns = await query(
+            `SELECT bet_type, bet_option, 
+                    COUNT(*) as bet_count,
+                    SUM(amount) as total_amount,
+                    AVG(amount) as avg_bet
+             FROM bets
+             WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+             GROUP BY bet_type, bet_option
+             ORDER BY bet_count DESC
+             LIMIT 10`
+        );
+
+        res.json({
+            daily_stats: dailyStats,
+            user_stats: userStats[0],
+            popular_bets: bettingPatterns
+        });
+
+    } catch (error) {
+        console.error('Get reports error:', error);
+        res.status(500).json({ error: 'Failed to fetch reports' });
+    }
+}
+
+// Ban user
+async function banUser(req, res) {
+    try {
+        const { userId } = req.params;
+        const { reason } = req.body;
+
+        await query(
+            'UPDATE users SET status = ? WHERE id = ?',
+            ['banned', userId]
+        );
+
+        // Log the action
+        await query(
+            `INSERT INTO transactions (user_id, type, amount, balance_before, balance_after, description) 
+             VALUES (?, ?, ?, ?, ?, ?)`
+            [userId, 'admin_debit', 0, 0, 0, `User banned: ${reason || 'No reason provided'}`]
+        );
+
+        res.json({ message: 'User banned successfully' });
+
+    } catch (error) {
+        console.error('Ban user error:', error);
+        res.status(500).json({ error: 'Failed to ban user' });
+    }
+}
+
 module.exports = {
+    adminLogin,
     getDashboardStats,
     getAllUsers,
     updateUserBalance,
     getGameControl,
     forceGameResult,
-    getAllBets
+    getAllBets,
+    getAllTransactions,
+    getReports,
+    banUser
 };

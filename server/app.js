@@ -11,6 +11,9 @@ const gameRoutes = require('./routes/game.routes');
 const betRoutes = require('./routes/bet.routes');
 const adminRoutes = require('./routes/admin.routes');
 
+// Import admin controller for direct login route
+const { adminLogin } = require('./controllers/admin.controller');
+
 // Import middleware
 const { authenticateToken } = require('./middleware/auth.middleware');
 const { authenticateAdmin } = require('./middleware/admin.middleware');
@@ -43,6 +46,11 @@ app.use('/api/user', authenticateToken, userRoutes);
 app.use('/api/wallet', authenticateToken, walletRoutes);
 app.use('/api/game', gameRoutes);
 app.use('/api/bet', authenticateToken, betRoutes);
+
+// Admin login route (no authentication required)
+app.post('/api/admin/login', adminLogin);
+
+// Admin routes (require authentication)
 app.use('/api/admin', authenticateAdmin, adminRoutes);
 
 // Public routes (no auth required)

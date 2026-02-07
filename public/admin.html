@@ -326,18 +326,119 @@
 
             <!-- Other sections would be implemented similarly -->
             <div id="bets-section" class="section" style="display: none;">
-                <h1>Bet Management</h1>
-                <p>This section would show all active and historical bets.</p>
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <h1><i class="fas fa-coins me-2"></i>Bet Management</h1>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>All Bets</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>User</th>
+                                                <th>Round</th>
+                                                <th>Type</th>
+                                                <th>Option</th>
+                                                <th>Amount</th>
+                                                <th>Status</th>
+                                                <th>Result</th>
+                                                <th>Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="betsTable">
+                                            <tr>
+                                                <td colspan="9" class="text-center">Loading bets...</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div id="transactions-section" class="section" style="display: none;">
-                <h1>Transaction Management</h1>
-                <p>This section would show all financial transactions.</p>
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <h1><i class="fas fa-exchange-alt me-2"></i>Transaction Management</h1>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>All Transactions</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>User</th>
+                                                <th>Type</th>
+                                                <th>Amount</th>
+                                                <th>Balance Before</th>
+                                                <th>Balance After</th>
+                                                <th>Description</th>
+                                                <th>Status</th>
+                                                <th>Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="transactionsTable">
+                                            <tr>
+                                                <td colspan="9" class="text-center">Loading transactions...</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div id="reports-section" class="section" style="display: none;">
-                <h1>Reports</h1>
-                <p>This section would show various analytical reports.</p>
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <h1><i class="fas fa-chart-bar me-2"></i>Reports</h1>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>User Statistics</h4>
+                            </div>
+                            <div class="card-body">
+                                <div id="userStats">
+                                    Loading statistics...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Popular Bets</h4>
+                            </div>
+                            <div class="card-body">
+                                <div id="popularBets">
+                                    Loading popular bets...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -378,17 +479,38 @@
                 case 'game-control':
                     loadGameControl();
                     break;
+                case 'bets':
+                    loadBets();
+                    break;
+                case 'transactions':
+                    loadTransactions();
+                    break;
+                case 'reports':
+                    loadReports();
+                    break;
             }
         }
 
         // Load dashboard data
         async function loadDashboardData() {
             try {
-                // In a real implementation, this would call admin API endpoints
-                document.getElementById('totalUsers').textContent = '1,247';
-                document.getElementById('activeGames').textContent = '15';
-                document.getElementById('totalRevenue').textContent = '₹2,45,680.50';
-                document.getElementById('pendingWithdrawals').textContent = '23';
+                const response = await fetch('/api/admin/dashboard', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Update dashboard statistics
+                    document.getElementById('totalUsers').textContent = data.stats.users.total_users || 0;
+                    document.getElementById('activeGames').textContent = data.stats.today.total_bets || 0;
+                    document.getElementById('totalRevenue').textContent = `₹${(data.stats.users.total_balance || 0).toFixed(2)}`;
+                    document.getElementById('pendingWithdrawals').textContent = '0'; // Would need withdrawal table
+                } else {
+                    console.error('Failed to load dashboard data');
+                }
             } catch (error) {
                 console.error('Error loading dashboard data:', error);
             }
@@ -413,7 +535,7 @@
                                 <td>${user.id}</td>
                                 <td>${user.username}</td>
                                 <td>${user.email}</td>
-                                <td>₹${user.balance.toFixed(2)}</td>
+                                <td>₹${parseFloat(user.balance).toFixed(2)}</td>
                                 <td><span class="badge bg-${user.status === 'active' ? 'success' : 'danger'}">${user.status}</span></td>
                                 <td>${new Date(user.created_at).toLocaleDateString()}</td>
                                 <td>
@@ -435,6 +557,7 @@
                 }
             } catch (error) {
                 console.error('Error loading users:', error);
+                document.getElementById('usersTable').innerHTML = '<tr><td colspan="7" class="text-center">Error loading users</td></tr>';
             }
         }
 
@@ -503,18 +626,61 @@
             alert(`Edit user ${userId} functionality would be implemented here`);
         }
 
-        function adjustBalance(userId) {
+        async function adjustBalance(userId) {
             const amount = prompt('Enter amount to adjust:');
             if (amount && !isNaN(amount)) {
-                alert(`Adjust balance for user ${userId} by ₹${amount}`);
-                // Implementation would call API to adjust balance
+                const action = prompt('Enter action (add/subtract):');
+                if (action && (action === 'add' || action === 'subtract')) {
+                    const reason = prompt('Enter reason (optional):') || 'Admin adjustment';
+                    
+                    try {
+                        const response = await fetch(`/api/admin/users/${userId}/balance`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: JSON.stringify({ amount: parseFloat(amount), action, reason })
+                        });
+                        
+                        if (response.ok) {
+                            alert(`Balance ${action}ed successfully for user ${userId}`);
+                            loadUsers(); // Refresh user list
+                        } else {
+                            const data = await response.json();
+                            alert(`Error: ${data.error}`);
+                        }
+                    } catch (error) {
+                        alert('Error adjusting balance');
+                    }
+                }
             }
         }
 
-        function banUser(userId) {
-            if (confirm(`Are you sure you want to ban user ${userId}?`)) {
-                alert(`User ${userId} banned`);
-                // Implementation would call API to ban user
+        async function banUser(userId) {
+            const reason = prompt('Enter reason for banning user:') || 'No reason provided';
+            
+            if (confirm(`Are you sure you want to ban user ${userId}? Reason: ${reason}`)) {
+                try {
+                    const response = await fetch(`/api/admin/users/${userId}/ban`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ reason })
+                    });
+                    
+                    if (response.ok) {
+                        alert(`User ${userId} banned successfully`);
+                        loadUsers(); // Refresh user list
+                    } else {
+                        const data = await response.json();
+                        alert(`Error: ${data.error}`);
+                    }
+                } catch (error) {
+                    alert('Error banning user');
+                }
             }
         }
 
@@ -524,6 +690,118 @@
             localStorage.removeItem('admin_token');
             window.location.href = '/admin-login';
         });
+
+        // Load bets
+        async function loadBets() {
+            try {
+                const response = await fetch('/api/admin/bets', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const tbody = document.getElementById('betsTable');
+                    
+                    if (data.bets.length > 0) {
+                        tbody.innerHTML = data.bets.map(bet => `
+                            <tr>
+                                <td>${bet.id}</td>
+                                <td>${bet.username}</td>
+                                <td>${bet.round_id}</td>
+                                <td>${bet.bet_type}</td>
+                                <td>${bet.bet_option}</td>
+                                <td>₹${parseFloat(bet.amount).toFixed(2)}</td>
+                                <td><span class="badge bg-${bet.status === 'won' ? 'success' : bet.status === 'lost' ? 'danger' : 'warning'}">${bet.status}</span></td>
+                                <td>${bet.result_number !== null ? bet.result_number + ' (' + bet.result_color + ')' : 'Pending'}</td>
+                                <td>${new Date(bet.created_at).toLocaleString()}</td>
+                            </tr>
+                        `).join('');
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="9" class="text-center">No bets found</td></tr>';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading bets:', error);
+                document.getElementById('betsTable').innerHTML = '<tr><td colspan="9" class="text-center">Error loading bets</td></tr>';
+            }
+        }
+
+        // Load transactions
+        async function loadTransactions() {
+            try {
+                const response = await fetch('/api/admin/transactions', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const tbody = document.getElementById('transactionsTable');
+                    
+                    if (data.transactions.length > 0) {
+                        tbody.innerHTML = data.transactions.map(transaction => `
+                            <tr>
+                                <td>${transaction.id}</td>
+                                <td>${transaction.username}</td>
+                                <td><span class="badge bg-${transaction.type.includes('credit') ? 'success' : 'danger'}">${transaction.type}</span></td>
+                                <td>₹${parseFloat(transaction.amount).toFixed(2)}</td>
+                                <td>₹${parseFloat(transaction.balance_before).toFixed(2)}</td>
+                                <td>₹${parseFloat(transaction.balance_after).toFixed(2)}</td>
+                                <td>${transaction.description}</td>
+                                <td><span class="badge bg-${transaction.status === 'completed' ? 'success' : 'warning'}">${transaction.status}</span></td>
+                                <td>${new Date(transaction.created_at).toLocaleString()}</td>
+                            </tr>
+                        `).join('');
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="9" class="text-center">No transactions found</td></tr>';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading transactions:', error);
+                document.getElementById('transactionsTable').innerHTML = '<tr><td colspan="9" class="text-center">Error loading transactions</td></tr>';
+            }
+        }
+
+        // Load reports
+        async function loadReports() {
+            try {
+                const response = await fetch('/api/admin/reports', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Update user statistics
+                    const userStatsDiv = document.getElementById('userStats');
+                    userStatsDiv.innerHTML = `
+                        <p><strong>Total Users:</strong> ${data.user_stats.total_users || 0}</p>
+                        <p><strong>Active Users:</strong> ${data.user_stats.active_users || 0}</p>
+                        <p><strong>Average Balance:</strong> ₹${(data.user_stats.avg_balance || 0).toFixed(2)}</p>
+                        <p><strong>Total Balance:</strong> ₹${(data.user_stats.total_balance || 0).toFixed(2)}</p>
+                    `;
+                    
+                    // Update popular bets
+                    const popularBetsDiv = document.getElementById('popularBets');
+                    if (data.popular_bets.length > 0) {
+                        popularBetsDiv.innerHTML = data.popular_bets.map(bet => `
+                            <p><strong>${bet.bet_type} - ${bet.bet_option}:</strong> ${bet.bet_count} bets (₹${parseFloat(bet.total_amount).toFixed(2)})</p>
+                        `).join('');
+                    } else {
+                        popularBetsDiv.innerHTML = '<p>No betting data available</p>';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading reports:', error);
+                document.getElementById('userStats').innerHTML = '<p>Error loading statistics</p>';
+                document.getElementById('popularBets').innerHTML = '<p>Error loading popular bets</p>';
+            }
+        }
 
         // Initialize
         loadDashboardData();

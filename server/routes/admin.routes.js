@@ -1,13 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const { 
+    adminLogin,
     getDashboardStats, 
     getAllUsers, 
     updateUserBalance, 
     getGameControl, 
     forceGameResult,
-    getAllBets 
+    getAllBets,
+    getAllTransactions,
+    getReports,
+    banUser
 } = require('../controllers/admin.controller');
+
+// Admin login
+router.post('/login', adminLogin);
 
 // Get dashboard statistics
 router.get('/dashboard', getDashboardStats);
@@ -26,5 +33,14 @@ router.post('/force-result', forceGameResult);
 
 // Get all bets
 router.get('/bets', getAllBets);
+
+// Get all transactions
+router.get('/transactions', getAllTransactions);
+
+// Get reports
+router.get('/reports', getReports);
+
+// Ban user
+router.put('/users/:userId/ban', banUser);
 
 module.exports = router;
