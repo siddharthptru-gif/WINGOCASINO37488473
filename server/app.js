@@ -10,6 +10,7 @@ const walletRoutes = require('./routes/wallet.routes');
 const gameRoutes = require('./routes/game.routes');
 const betRoutes = require('./routes/bet.routes');
 const adminRoutes = require('./routes/admin.routes');
+const paymentRoutes = require('./routes/payment.routes');
 
 // Import admin controller for direct login route
 const { adminLogin } = require('./controllers/admin.controller');
@@ -46,6 +47,7 @@ app.use('/api/user', authenticateToken, userRoutes);
 app.use('/api/wallet', authenticateToken, walletRoutes);
 app.use('/api/game', gameRoutes);
 app.use('/api/bet', authenticateToken, betRoutes);
+app.use('/api/payment', authenticateToken, paymentRoutes);
 
 // Admin login route (no authentication required)
 app.post('/api/admin/login', adminLogin);

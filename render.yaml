@@ -3,7 +3,9 @@ services:
     name: wingo-casino
     env: node
     plan: free
-    buildCommand: npm install
+    buildCommand: |
+      mkdir -p database
+      npm install
     startCommand: npm start
     envVars:
       - key: NODE_ENV

@@ -29,17 +29,10 @@
             border-radius: 15px;
             margin-bottom: 20px;
         }
-        .balance-card {
+        .wallet-card {
             background: linear-gradient(45deg, #00ffff, #0080ff);
             color: black;
             border: none;
-        }
-        .transaction-item {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-left: 4px solid #00ffff;
         }
         .form-control {
             background: rgba(255, 255, 255, 0.1);
@@ -52,17 +45,38 @@
             box-shadow: 0 0 0 0.25rem rgba(0, 255, 255, 0.25);
             color: white;
         }
-        .btn-deposit {
-            background: linear-gradient(45deg, #00ff00, #00cc00);
+        .btn-primary {
+            background: linear-gradient(45deg, #00ffff, #0080ff);
             border: none;
             color: black;
             font-weight: bold;
         }
-        .btn-withdraw {
-            background: linear-gradient(45deg, #ff6600, #cc5200);
+        .btn-success {
+            background: linear-gradient(45deg, #00ff00, #00cc00);
             border: none;
             color: white;
-            font-weight: bold;
+        }
+        .btn-warning {
+            background: linear-gradient(45deg, #ff8c00, #ff4500);
+            border: none;
+            color: white;
+        }
+        .btn-danger {
+            background: linear-gradient(45deg, #ff4500, #ff0000);
+            border: none;
+            color: white;
+        }
+        .transaction-row {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 0;
+        }
+        .transaction-row:last-child {
+            border-bottom: none;
+        }
+        .modal-content {
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            border: 1px solid rgba(0, 255, 255, 0.3);
         }
     </style>
 </head>
@@ -110,118 +124,81 @@
         <div class="container-fluid">
             <div class="row mb-4">
                 <div class="col-md-12">
-                    <h1><i class="fas fa-wallet me-2"></i>Wallet</h1>
-                    <p>Manage your funds and transaction history</p>
+                    <h1><i class="fas fa-wallet me-2"></i>My Wallet</h1>
+                    <p>Manage your balance and transactions</p>
                 </div>
             </div>
 
-            <!-- Balance Overview -->
+            <!-- Wallet Balance -->
             <div class="row mb-4">
                 <div class="col-md-12">
-                    <div class="card balance-card">
-                        <div class="card-body text-center">
-                            <h3>Current Balance</h3>
-                            <h1 id="balance">₹0.00</h1>
-                            <div class="mt-3">
-                                <button class="btn btn-deposit btn-lg me-3" data-bs-toggle="modal" data-bs-target="#depositModal">
-                                    <i class="fas fa-plus-circle me-2"></i>Deposit
-                                </button>
-                                <button class="btn btn-withdraw btn-lg" data-bs-toggle="modal" data-bs-target="#withdrawModal">
-                                    <i class="fas fa-minus-circle me-2"></i>Withdraw
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <!-- Deposit Section -->
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header">
-                            <h4><i class="fas fa-arrow-down text-success me-2"></i>Deposit Funds</h4>
-                        </div>
+                    <div class="card wallet-card">
                         <div class="card-body">
-                            <p>Add money to your wallet to start playing</p>
-                            
-                            <div class="mb-3">
-                                <label class="form-label">Quick Deposit Amounts</label>
-                                <div>
-                                    <button class="btn btn-outline-success btn-sm me-2 mb-2" onclick="setDepositAmount(100)">₹100</button>
-                                    <button class="btn btn-outline-success btn-sm me-2 mb-2" onclick="setDepositAmount(500)">₹500</button>
-                                    <button class="btn btn-outline-success btn-sm me-2 mb-2" onclick="setDepositAmount(1000)">₹1,000</button>
-                                    <button class="btn btn-outline-success btn-sm me-2 mb-2" onclick="setDepositAmount(5000)">₹5,000</button>
-                                    <button class="btn btn-outline-success btn-sm mb-2" onclick="setDepositAmount(10000)">₹10,000</button>
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h2>Your Balance</h2>
+                                    <h1 id="walletBalance">₹0.00</h1>
+                                    <p class="mb-0">Available for betting and withdrawal</p>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <button class="btn btn-success mb-2" onclick="showDepositModal()">
+                                        <i class="fas fa-plus me-2"></i>Deposit
+                                    </button>
+                                    <button class="btn btn-warning" onclick="showWithdrawalModal()">
+                                        <i class="fas fa-minus me-2"></i>Withdraw
+                                    </button>
                                 </div>
                             </div>
-                            
-                            <div class="mb-3">
-                                <label for="depositAmount" class="form-label">Amount (₹)</label>
-                                <input type="number" class="form-control" id="depositAmount" min="100" max="100000" placeholder="Enter amount">
-                                <div class="form-text">Minimum deposit: ₹100</div>
-                            </div>
-                            
-                            <button class="btn btn-success w-100" onclick="initiateDeposit()">
-                                <i class="fas fa-credit-card me-2"></i>Proceed to Payment
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Withdraw Section -->
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header">
-                            <h4><i class="fas fa-arrow-up text-warning me-2"></i>Withdraw Funds</h4>
-                        </div>
-                        <div class="card-body">
-                            <p>Withdraw your winnings to your bank account</p>
-                            
-                            <div class="mb-3">
-                                <label for="withdrawAmount" class="form-label">Amount (₹)</label>
-                                <input type="number" class="form-control" id="withdrawAmount" min="100" placeholder="Enter amount">
-                                <div class="form-text">Minimum withdrawal: ₹100</div>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="bankAccount" class="form-label">Bank Account Number</label>
-                                <input type="text" class="form-control" id="bankAccount" placeholder="Enter bank account number">
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="ifscCode" class="form-label">IFSC Code</label>
-                                <input type="text" class="form-control" id="ifscCode" placeholder="Enter IFSC code">
-                            </div>
-                            
-                            <button class="btn btn-warning w-100" onclick="initiateWithdrawal()">
-                                <i class="fas fa-university me-2"></i>Request Withdrawal
-                            </button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Transaction History -->
-            <div class="row mt-4">
+            <!-- Quick Deposit Options -->
+            <div class="row mb-4">
                 <div class="col-md-12">
                     <div class="card">
                         <div class="card-header">
-                            <h4><i class="fas fa-exchange-alt me-2"></i>Transaction History</h4>
+                            <h4><i class="fas fa-bolt me-2"></i>Quick Deposit</h4>
                         </div>
                         <div class="card-body">
-                            <div class="mb-3">
-                                <div class="btn-group" role="group">
-                                    <button type="button" class="btn btn-outline-info active" onclick="filterTransactions('all')">All</button>
-                                    <button type="button" class="btn btn-outline-success" onclick="filterTransactions('deposit')">Deposits</button>
-                                    <button type="button" class="btn btn-outline-warning" onclick="filterTransactions('withdrawal')">Withdrawals</button>
-                                    <button type="button" class="btn btn-outline-primary" onclick="filterTransactions('bet')">Bets</button>
-                                    <button type="button" class="btn btn-outline-danger" onclick="filterTransactions('win')">Winnings</button>
+                            <div class="row">
+                                <div class="col-md-2 col-4 mb-3">
+                                    <button class="btn btn-outline-primary w-100" onclick="quickDeposit(100)">₹100</button>
+                                </div>
+                                <div class="col-md-2 col-4 mb-3">
+                                    <button class="btn btn-outline-primary w-100" onclick="quickDeposit(200)">₹200</button>
+                                </div>
+                                <div class="col-md-2 col-4 mb-3">
+                                    <button class="btn btn-outline-primary w-100" onclick="quickDeposit(500)">₹500</button>
+                                </div>
+                                <div class="col-md-2 col-4 mb-3">
+                                    <button class="btn btn-outline-primary w-100" onclick="quickDeposit(1000)">₹1,000</button>
+                                </div>
+                                <div class="col-md-2 col-4 mb-3">
+                                    <button class="btn btn-outline-primary w-100" onclick="quickDeposit(2000)">₹2,000</button>
+                                </div>
+                                <div class="col-md-2 col-4 mb-3">
+                                    <button class="btn btn-outline-primary w-100" onclick="quickDeposit(5000)">₹5,000</button>
                                 </div>
                             </div>
-                            
-                            <div id="transactionHistory">
-                                <p class="text-center text-muted">Loading transaction history...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4><i class="fas fa-exchange-alt me-2"></i>Recent Transactions</h4>
+                        </div>
+                        <div class="card-body">
+                            <div id="transactionsList">
+                                <div class="text-center py-4">
+                                    <i class="fas fa-spinner fa-spin me-2"></i>Loading transactions...
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -232,56 +209,98 @@
 
     <!-- Deposit Modal -->
     <div class="modal fade" id="depositModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content bg-dark text-white">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Deposit Funds</h5>
+                    <h5 class="modal-title"><i class="fas fa-plus me-2"></i>Deposit Funds</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="text-center mb-4">
-                        <h3 id="depositAmountDisplay">₹0</h3>
-                        <p class="text-muted">Please complete the payment to add funds to your wallet</p>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Send money to our UPI ID: <strong>9304511727@ybl</strong> and submit the details below.
+                        <br><br>
+                        <strong>Payment Instructions:</strong>
+                        <ol>
+                            <li>Send the exact amount to the UPI ID above</li>
+                            <li>Take a screenshot of the payment confirmation</li>
+                            <li>Submit the details and screenshot below</li>
+                            <li>Wait for admin approval (usually within 5 minutes)</li>
+                        </ol>
                     </div>
                     
-                    <div class="d-grid gap-2">
-                        <button class="btn btn-primary" onclick="processPayment('upi')">
-                            <i class="fas fa-mobile-alt me-2"></i>Pay with UPI
-                        </button>
-                        <button class="btn btn-success" onclick="processPayment('card')">
-                            <i class="fas fa-credit-card me-2"></i>Pay with Card
-                        </button>
-                        <button class="btn btn-info" onclick="processPayment('netbanking')">
-                            <i class="fas fa-laptop me-2"></i>Net Banking
-                        </button>
-                    </div>
+                    <form id="depositForm">
+                        <div class="mb-3">
+                            <label for="depositAmount" class="form-label">Amount (₹)</label>
+                            <input type="number" class="form-control" id="depositAmount" min="10" max="50000" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="depositUpiId" class="form-label">Your UPI ID</label>
+                            <input type="text" class="form-control" id="depositUpiId" placeholder="e.g., yourname@upi" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="depositScreenshot" class="form-label">Upload Payment Screenshot</label>
+                            <input type="file" class="form-control" id="depositScreenshot" accept="image/*">
+                            <div class="form-text">Upload screenshot of your payment confirmation</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="depositReference" class="form-label">Transaction Reference (Optional)</label>
+                            <input type="text" class="form-control" id="depositReference" placeholder="Transaction ID if available">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success" onclick="submitDeposit()">Submit Deposit</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Withdraw Modal -->
-    <div class="modal fade" id="withdrawModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content bg-dark text-white">
+    <!-- Withdrawal Modal -->
+    <div class="modal fade" id="withdrawalModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Withdraw Funds</h5>
+                    <h5 class="modal-title"><i class="fas fa-minus me-2"></i>Withdraw Funds</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="text-center mb-4">
-                        <h3 id="withdrawAmountDisplay">₹0</h3>
-                        <p class="text-muted">Withdrawal will be processed to your bank account</p>
-                    </div>
-                    
                     <div class="alert alert-warning">
-                        <i class="fas fa-info-circle me-2"></i>
-                        Withdrawals are processed within 24-48 hours. A processing fee of ₹20 may apply.
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Minimum withdrawal amount is ₹100. Withdrawal requests are processed within 24 hours.
                     </div>
                     
-                    <button class="btn btn-warning w-100" onclick="confirmWithdrawal()">
-                        <i class="fas fa-check-circle me-2"></i>Confirm Withdrawal
-                    </button>
+                    <form id="withdrawalForm">
+                        <div class="mb-3">
+                            <label for="withdrawalAmount" class="form-label">Amount (₹)</label>
+                            <input type="number" class="form-control" id="withdrawalAmount" min="100" required>
+                            <div class="form-text">Available balance: <span id="availableBalance">₹0.00</span></div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="withdrawalUpiId" class="form-label">Your UPI ID</label>
+                            <input type="text" class="form-control" id="withdrawalUpiId" placeholder="e.g., yourname@upi" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="withdrawalScreenshot" class="form-label">Upload Bank/Screenshot (Optional)</label>
+                            <input type="file" class="form-control" id="withdrawalScreenshot" accept="image/*">
+                            <div class="form-text">Upload any supporting documents if needed</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="withdrawalNote" class="form-label">Additional Note (Optional)</label>
+                            <textarea class="form-control" id="withdrawalNote" rows="3" placeholder="Any additional information"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-warning" onclick="submitWithdrawal()">Submit Withdrawal</button>
                 </div>
             </div>
         </div>
@@ -297,219 +316,230 @@
             window.location.href = '/login';
         }
 
-        let currentFilter = 'all';
-
-        // Set quick deposit amount
-        function setDepositAmount(amount) {
-            document.getElementById('depositAmount').value = amount;
-        }
-
-        // Initiate deposit
-        function initiateDeposit() {
-            const amount = parseInt(document.getElementById('depositAmount').value);
-            if (!amount || amount < 100) {
-                alert('Please enter a valid amount (minimum ₹100)');
-                return;
-            }
-            
-            document.getElementById('depositAmountDisplay').textContent = `₹${amount}`;
-            const depositModal = new bootstrap.Modal(document.getElementById('depositModal'));
-            depositModal.show();
-        }
-
-        // Process payment
-        async function processPayment(method) {
-            const amount = parseInt(document.getElementById('depositAmount').value);
-            
-            try {
-                // In a real implementation, this would integrate with a payment gateway
-                // For demo purposes, we'll simulate a successful payment
-                
-                const response = await fetch('/api/wallet/deposit', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({
-                        amount: amount,
-                        payment_method: method,
-                        transaction_id: `TXN_${Date.now()}` // Simulated transaction ID
-                    })
-                });
-                
-                const data = await response.json();
-                
-                if (response.ok) {
-                    alert(`Payment successful! ₹${amount} added to your wallet.`);
-                    loadWalletData();
-                    loadTransactionHistory();
-                    bootstrap.Modal.getInstance(document.getElementById('depositModal')).hide();
-                    document.getElementById('depositAmount').value = '';
-                } else {
-                    alert(`Payment failed: ${data.error}`);
-                }
-            } catch (error) {
-                alert('Payment processing error. Please try again.');
-            }
-        }
-
-        // Initiate withdrawal
-        function initiateWithdrawal() {
-            const amount = parseInt(document.getElementById('withdrawAmount').value);
-            const bankAccount = document.getElementById('bankAccount').value;
-            const ifscCode = document.getElementById('ifscCode').value;
-            
-            if (!amount || amount < 100) {
-                alert('Please enter a valid amount (minimum ₹100)');
-                return;
-            }
-            
-            if (!bankAccount || !ifscCode) {
-                alert('Please enter bank account details');
-                return;
-            }
-            
-            document.getElementById('withdrawAmountDisplay').textContent = `₹${amount}`;
-            const withdrawModal = new bootstrap.Modal(document.getElementById('withdrawModal'));
-            withdrawModal.show();
-        }
-
-        // Confirm withdrawal
-        async function confirmWithdrawal() {
-            const amount = parseInt(document.getElementById('withdrawAmount').value);
-            const bankAccount = document.getElementById('bankAccount').value;
-            const ifscCode = document.getElementById('ifscCode').value;
-            
-            try {
-                const response = await fetch('/api/wallet/withdraw', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({
-                        amount: amount,
-                        bank_account: bankAccount,
-                        ifsc_code: ifscCode
-                    })
-                });
-                
-                const data = await response.json();
-                
-                if (response.ok) {
-                    alert(`Withdrawal request submitted! Reference ID: ${data.withdrawal.id}`);
-                    loadWalletData();
-                    loadTransactionHistory();
-                    bootstrap.Modal.getInstance(document.getElementById('withdrawModal')).hide();
-                    document.getElementById('withdrawAmount').value = '';
-                    document.getElementById('bankAccount').value = '';
-                    document.getElementById('ifscCode').value = '';
-                } else {
-                    alert(`Withdrawal failed: ${data.error}`);
-                }
-            } catch (error) {
-                alert('Withdrawal processing error. Please try again.');
-            }
-        }
-
         // Load wallet data
         async function loadWalletData() {
             try {
-                const response = await fetch('/api/wallet/balance', {
+                const response = await fetch('/api/wallet', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 });
-                
+
                 if (response.ok) {
                     const data = await response.json();
-                    document.getElementById('balance').textContent = `₹${data.balance.toFixed(2)}`;
+                    document.getElementById('walletBalance').textContent = `₹${data.balance.toFixed(2)}`;
+                    document.getElementById('availableBalance').textContent = `₹${data.balance.toFixed(2)}`;
                 }
             } catch (error) {
                 console.error('Error loading wallet data:', error);
             }
         }
 
-        // Load transaction history
-        async function loadTransactionHistory(filter = 'all') {
+        // Load transactions
+        async function loadTransactions() {
             try {
-                const response = await fetch(`/api/wallet/transactions?limit=20&type=${filter}`, {
+                const response = await fetch('/api/wallet/transactions', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 });
-                
+
                 if (response.ok) {
                     const data = await response.json();
-                    const historyDiv = document.getElementById('transactionHistory');
-                    
-                    if (data.transactions.length > 0) {
-                        let html = '';
-                        data.transactions.forEach(tx => {
-                            const typeIcon = getTransactionIcon(tx.type);
-                            const typeClass = getTransactionClass(tx.type);
-                            const amountClass = tx.type === 'deposit' || tx.type === 'win' ? 'text-success' : 'text-danger';
-                            
-                            html += `
-                                <div class="transaction-item">
-                                    <div class="d-flex justify-content-between">
-                                        <div>
-                                            <i class="${typeIcon} me-2"></i>
-                                            <strong>${tx.type.toUpperCase()}</strong>
-                                            ${tx.description ? `<small class="d-block text-muted">${tx.description}</small>` : ''}
-                                        </div>
-                                        <div class="text-end">
-                                            <span class="${amountClass}">${tx.type === 'deposit' || tx.type === 'win' ? '+' : '-'}₹${tx.amount.toFixed(2)}</span>
-                                            <br><small class="text-muted">${new Date(tx.created_at).toLocaleString()}</small>
-                                        </div>
+                    const container = document.getElementById('transactionsList');
+
+                    if (data.transactions.length === 0) {
+                        container.innerHTML = '<div class="text-center py-4"><i class="fas fa-inbox me-2"></i>No transactions found</div>';
+                        return;
+                    }
+
+                    let html = '';
+                    data.transactions.forEach(tx => {
+                        const typeClass = tx.type === 'deposit' ? 'text-success' : 
+                                        tx.type === 'withdrawal' ? 'text-danger' :
+                                        tx.type === 'win' ? 'text-success' : 'text-info';
+                        const icon = tx.type === 'deposit' ? 'fa-arrow-down' :
+                                   tx.type === 'withdrawal' ? 'fa-arrow-up' :
+                                   tx.type === 'win' ? 'fa-trophy' : 'fa-coins';
+                        
+                        html += `
+                            <div class="transaction-row">
+                                <div class="row align-items-center">
+                                    <div class="col-md-2">
+                                        <i class="fas ${icon} ${typeClass} me-2"></i>
+                                        <span class="badge bg-${tx.type === 'deposit' ? 'success' : tx.type === 'withdrawal' ? 'danger' : 'primary'}">${tx.type}</span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <strong class="${typeClass}">₹${Math.abs(tx.amount).toFixed(2)}</strong>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div>${tx.description || 'Transaction'}</div>
+                                        <small class="text-muted">${new Date(tx.created_at).toLocaleString()}</small>
+                                    </div>
+                                    <div class="col-md-3 text-end">
+                                        <span class="badge bg-${tx.status === 'completed' ? 'success' : tx.status === 'pending' ? 'warning' : 'danger'}">${tx.status}</span>
                                     </div>
                                 </div>
-                            `;
-                        });
-                        historyDiv.innerHTML = html;
-                    } else {
-                        historyDiv.innerHTML = '<p class="text-center text-muted">No transactions found</p>';
-                    }
+                            </div>
+                        `;
+                    });
+
+                    container.innerHTML = html;
                 }
             } catch (error) {
-                console.error('Error loading transaction history:', error);
+                console.error('Error loading transactions:', error);
+                document.getElementById('transactionsList').innerHTML = '<div class="text-center py-4 text-danger"><i class="fas fa-exclamation-triangle me-2"></i>Error loading transactions</div>';
             }
         }
 
-        // Filter transactions
-        function filterTransactions(type) {
-            currentFilter = type;
-            // Update active button
-            document.querySelectorAll('.btn-group .btn').forEach(btn => {
-                btn.classList.remove('active');
+        // Show deposit modal
+        function showDepositModal() {
+            document.getElementById('depositAmount').value = '';
+            document.getElementById('depositUpiId').value = '';
+            document.getElementById('depositScreenshot').value = '';
+            document.getElementById('depositReference').value = '';
+            
+            const modal = new bootstrap.Modal(document.getElementById('depositModal'));
+            modal.show();
+        }
+
+        // Show withdrawal modal
+        function showWithdrawalModal() {
+            loadWalletData().then(() => {
+                document.getElementById('withdrawalAmount').value = '';
+                document.getElementById('withdrawalUpiId').value = '';
+                document.getElementById('withdrawalScreenshot').value = '';
+                document.getElementById('withdrawalNote').value = '';
+                
+                const modal = new bootstrap.Modal(document.getElementById('withdrawalModal'));
+                modal.show();
             });
-            event.target.classList.add('active');
-            loadTransactionHistory(type);
         }
 
-        // Get transaction icon
-        function getTransactionIcon(type) {
-            const icons = {
-                'deposit': 'fas fa-arrow-down text-success',
-                'withdrawal': 'fas fa-arrow-up text-warning',
-                'bet': 'fas fa-dice text-primary',
-                'win': 'fas fa-trophy text-success',
-                'fee': 'fas fa-minus-circle text-danger'
-            };
-            return icons[type] || 'fas fa-exchange-alt';
+        // Quick deposit
+        function quickDeposit(amount) {
+            document.getElementById('depositAmount').value = amount;
+            showDepositModal();
         }
 
-        // Get transaction class
-        function getTransactionClass(type) {
-            const classes = {
-                'deposit': 'text-success',
-                'withdrawal': 'text-warning',
-                'bet': 'text-primary',
-                'win': 'text-success',
-                'fee': 'text-danger'
-            };
-            return classes[type] || 'text-muted';
+        // Submit deposit
+        async function submitDeposit() {
+            const amount = document.getElementById('depositAmount').value;
+            const upiId = document.getElementById('depositUpiId').value;
+            const screenshotFile = document.getElementById('depositScreenshot').files[0];
+            const reference = document.getElementById('depositReference').value;
+
+            if (!amount || !upiId) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            if (amount < 10) {
+                alert('Minimum deposit amount is ₹10');
+                return;
+            }
+
+            // Upload screenshot if provided
+            let screenshotUrl = null;
+            if (screenshotFile) {
+                screenshotUrl = await uploadFile(screenshotFile);
+            }
+
+            try {
+                const response = await fetch('/api/payment/deposit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        amount: parseFloat(amount),
+                        upi_id: upiId,
+                        screenshot: screenshotUrl || null,
+                        reference: reference || null
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Deposit request submitted successfully! Wait for admin approval.');
+                    bootstrap.Modal.getInstance(document.getElementById('depositModal')).hide();
+                    loadWalletData();
+                    loadTransactions();
+                } else {
+                    alert(`Error: ${data.error}`);
+                }
+            } catch (error) {
+                alert('Network error. Please try again.');
+            }
+        }
+
+        // Submit withdrawal
+        async function submitWithdrawal() {
+            const amount = document.getElementById('withdrawalAmount').value;
+            const upiId = document.getElementById('withdrawalUpiId').value;
+            const screenshotFile = document.getElementById('withdrawalScreenshot').files[0];
+            const note = document.getElementById('withdrawalNote').value;
+
+            if (!amount || !upiId) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            if (amount < 100) {
+                alert('Minimum withdrawal amount is ₹100');
+                return;
+            }
+
+            // Check if sufficient balance
+            const currentBalance = parseFloat(document.getElementById('walletBalance').textContent.replace('₹', ''));
+            if (parseFloat(amount) > currentBalance) {
+                alert('Insufficient balance for this withdrawal');
+                return;
+            }
+
+            // Upload screenshot if provided
+            let screenshotUrl = null;
+            if (screenshotFile) {
+                screenshotUrl = await uploadFile(screenshotFile);
+            }
+
+            try {
+                const response = await fetch('/api/payment/withdrawal', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        amount: parseFloat(amount),
+                        upi_id: upiId,
+                        screenshot: screenshotUrl || null,
+                        note: note || null
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Withdrawal request submitted successfully! Wait for admin approval.');
+                    bootstrap.Modal.getInstance(document.getElementById('withdrawalModal')).hide();
+                    loadWalletData();
+                    loadTransactions();
+                } else {
+                    alert(`Error: ${data.error}`);
+                }
+            } catch (error) {
+                alert('Network error. Please try again.');
+            }
+        }
+
+        // Upload file helper
+        async function uploadFile(file) {
+            // In a real implementation, you would upload to cloud storage
+            // For now, we'll return a placeholder
+            return `screenshot_${Date.now()}_${file.name}`;
         }
 
         // Logout
@@ -523,7 +553,13 @@
 
         // Initialize
         loadWalletData();
-        loadTransactionHistory();
+        loadTransactions();
+
+        // Auto-refresh every 30 seconds
+        setInterval(() => {
+            loadWalletData();
+            loadTransactions();
+        }, 30000);
     </script>
 </body>
 </html>

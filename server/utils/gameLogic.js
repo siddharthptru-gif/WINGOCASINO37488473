@@ -62,8 +62,6 @@ async function settleBets(roundId, result) {
 
         // Process winning bets
         if (winningBets.length > 0) {
-            const winQueries = [];
-            
             for (const bet of winningBets) {
                 // Calculate payout
                 let payoutMultiplier = 2; // Default 2x for most bets
@@ -82,39 +80,42 @@ async function settleBets(roundId, result) {
                     [bet.user_id]
                 );
                 
-                const currentBalance = wallets[0].balance;
+                const currentBalance = wallets[0]?.balance || 0;
                 const newBalance = currentBalance + payout;
                 
-                // Add queries for this winning bet
-                winQueries.push({
-                    sql: 'UPDATE bets SET status = ?, payout = ? WHERE id = ?',
-                    params: ['won', payout, bet.id]
-                });
+                // Update bet status and payout
+                await query(
+                    'UPDATE bets SET status = ?, payout = ? WHERE id = ?',
+                    ['won', payout, bet.id]
+                );
                 
-                winQueries.push({
-                    sql: 'UPDATE wallets SET balance = ? WHERE user_id = ?',
-                    params: [newBalance, bet.user_id]
-                });
+                // Update wallet balance
+                await query(
+                    'UPDATE wallets SET balance = ? WHERE user_id = ?',
+                    [newBalance, bet.user_id]
+                );
                 
-                winQueries.push({
-                    sql: `INSERT INTO transactions (user_id, type, amount, balance_before, balance_after) 
-                          VALUES (?, ?, ?, ?, ?)`,
-                    params: [bet.user_id, 'win', payout, currentBalance, newBalance]
-                });
+                // Record transaction
+                await query(
+                    `INSERT INTO transactions (user_id, type, amount, balance_before, balance_after, description) 
+                          VALUES (?, ?, ?, ?, ?, ?)`,
+                    [bet.user_id, 'win', payout, currentBalance, newBalance, `Win from round ${roundId}`]
+                );
             }
             
-            // Execute all winning bet queries
-            await transaction(winQueries);
+            console.log(`💰 Processed ${winningBets.length} winning bets`);
         }
 
-        // Process losing bets
+        // Process losing bets - they already had their bet amount deducted
         if (losingBets.length > 0) {
-            const loseQueries = losingBets.map(bet => ({
-                sql: 'UPDATE bets SET status = ? WHERE id = ?',
-                params: ['lost', bet.id]
-            }));
+            for (const bet of losingBets) {
+                await query(
+                    'UPDATE bets SET status = ? WHERE id = ?',
+                    ['lost', bet.id]
+                );
+            }
             
-            await transaction(loseQueries);
+            console.log(`💸 Processed ${losingBets.length} losing bets`);
         }
 
         console.log(`🎲 Settled ${winningBets.length} winning bets and ${losingBets.length} losing bets for round ${roundId}`);

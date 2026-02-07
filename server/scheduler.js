@@ -44,7 +44,7 @@ async function createNewGameRound() {
     try {
         // Check if there's already an active round
         const activeRounds = await query(
-            'SELECT id FROM game_rounds WHERE status = ? AND end_time > NOW()',
+            'SELECT id FROM game_rounds WHERE status = ? AND end_time > datetime("now")',
             ['active']
         );
         
@@ -94,7 +94,7 @@ async function updateGameStatus() {
             
             // Update round status
             await query(
-                'UPDATE game_rounds SET status = ?, updated_at = NOW() WHERE id = ?',
+                'UPDATE game_rounds SET status = ?, updated_at = datetime("now") WHERE id = ?',
                 ['closed', round.id]
             );
             

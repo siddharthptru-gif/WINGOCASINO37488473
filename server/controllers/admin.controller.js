@@ -68,14 +68,14 @@ async function getDashboardStats(req, res) {
              JOIN wallets w ON u.id = w.user_id`
         );
 
-        // Get today's betting stats
+        // Get today's betting stats (SQLite compatible)
         const todayStats = await query(
             `SELECT 
                 COUNT(*) as total_bets,
                 SUM(amount) as total_bet_amount,
                 SUM(CASE WHEN status = 'won' THEN payout ELSE 0 END) as total_payout
              FROM bets 
-             WHERE DATE(created_at) = CURDATE()`
+             WHERE date(created_at) = date('now')`
         );
 
         // Get recent users
@@ -419,16 +419,16 @@ async function getAllTransactions(req, res) {
 // Get reports data
 async function getReports(req, res) {
     try {
-        // Get daily statistics
+        // Get daily statistics (SQLite compatible)
         const dailyStats = await query(
-            `SELECT DATE(created_at) as date, 
+            `SELECT date(created_at) as date, 
                     COUNT(*) as total_bets,
                     SUM(amount) as total_bet_amount,
                     SUM(CASE WHEN status = 'won' THEN payout ELSE 0 END) as total_payout,
                     SUM(CASE WHEN status = 'won' THEN payout - amount ELSE -amount END) as house_profit
              FROM bets 
-             WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
-             GROUP BY DATE(created_at)
+             WHERE created_at >= datetime('now', '-30 days')
+             GROUP BY date(created_at)
              ORDER BY date DESC`
         );
 
@@ -443,14 +443,14 @@ async function getReports(req, res) {
              JOIN wallets w ON u.id = w.user_id`
         );
 
-        // Get popular betting patterns
+        // Get popular betting patterns (SQLite compatible)
         const bettingPatterns = await query(
             `SELECT bet_type, bet_option, 
                     COUNT(*) as bet_count,
                     SUM(amount) as total_amount,
                     AVG(amount) as avg_bet
              FROM bets
-             WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+             WHERE created_at >= datetime('now', '-7 days')
              GROUP BY bet_type, bet_option
              ORDER BY bet_count DESC
              LIMIT 10`

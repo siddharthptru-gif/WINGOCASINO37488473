@@ -78,7 +78,7 @@ async function updateProfile(req, res) {
         updateValues.push(userId);
 
         await query(
-            `UPDATE users SET ${updateFields.join(', ')}, updated_at = NOW() WHERE id = ?`,
+            `UPDATE users SET ${updateFields.join(', ')}, updated_at = datetime("now") WHERE id = ?`,
             updateValues
         );
 

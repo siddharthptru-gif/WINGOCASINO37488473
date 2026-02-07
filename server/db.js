@@ -1,84 +1,56 @@
-const mysql = require('mysql2/promise');
-const inMemoryDB = require('./db-memory');
 require('dotenv').config();
 
-// Check if we should use in-memory database (for Render deployment)
-let useInMemoryDB = process.env.DB_TYPE === 'memory' || process.env.NODE_ENV === 'production';
+// Use PostgreSQL in production, SQLite in development
+const isProduction = process.env.NODE_ENV === 'production';
 
-let pool;
-
-if (!useInMemoryDB) {
-    // Database configuration for MySQL
-    const dbConfig = {
-        host: process.env.DB_HOST || 'localhost',
-        port: process.env.DB_PORT || 3306,
-        user: process.env.DB_USER || 'root',
-        password: process.env.DB_PASSWORD || '',
-        database: process.env.DB_NAME || 'wingo_casino',
-        connectionLimit: 10,
-        queueLimit: 0,
-        acquireTimeout: 60000,
-        timeout: 60000,
-        reconnect: true
-    };
-    
+let dbModule;
+if (isProduction) {
     try {
-        pool = mysql.createPool(dbConfig);
+        if (!process.env.DATABASE_URL) {
+            console.warn('⚠️  DATABASE_URL not found in production environment, falling back to SQLite');
+            dbModule = require('./db-sqlite');
+        } else {
+            dbModule = require('./db-postgres');
+        }
     } catch (error) {
-        console.log('⚠️  MySQL configuration error, falling back to in-memory database');
-        useInMemoryDB = true;
+        console.error('❌ PostgreSQL connection failed:', error.message);
+        console.log('🔄 Falling back to SQLite database');
+        dbModule = require('./db-sqlite');
     }
+} else {
+    dbModule = require('./db-sqlite');
 }
 
-if (useInMemoryDB) {
-    console.log('🎮 Using in-memory database for deployment');
-    inMemoryDB.initializeSampleData();
-}
+const dbName = isProduction ? 'PostgreSQL' : 'SQLite';
+console.log(`🎮 Using ${dbName} database for ${isProduction ? 'production' : 'development'}`);
 
 // Test database connection
 async function testConnection() {
-    if (useInMemoryDB) {
-        console.log('✅ Using in-memory database for development');
-        return true;
-    }
-    
     try {
-        const connection = await pool.getConnection();
-        console.log('✅ MySQL connected successfully');
-        connection.release();
+        // Test database connection
+        await dbModule.query('SELECT 1');
+        console.log(`✅ ${dbName} database connected successfully`);
         return true;
     } catch (error) {
-        console.error('❌ MySQL connection failed:', error.message);
-        console.log('⚠️  Falling back to in-memory database for development');
-        useInMemoryDB = true;
-        inMemoryDB.initializeSampleData();
-        return true;
+        console.error(`❌ ${dbName} connection failed:`, error.message);
+        return false;
     }
 }
 
 // Close all connections
 async function close() {
-    if (useInMemoryDB) {
-        console.log('🔒 In-memory database session ended');
-        return;
-    }
-    
     try {
-        await pool.end();
-        console.log('🔒 MySQL connections closed');
+        await dbModule.close();
+        console.log(`🔒 ${dbName} database closed`);
     } catch (error) {
-        console.error('Error closing database connections:', error);
+        console.error(`Error closing ${dbName} database:`, error);
     }
 }
 
 // Execute query with error handling
 async function query(sql, params = []) {
-    if (useInMemoryDB) {
-        return await inMemoryDB.query(sql, params);
-    }
-    
     try {
-        const [rows] = await pool.execute(sql, params);
+        const rows = await dbModule.query(sql, params);
         return rows;
     } catch (error) {
         console.error('Database query error:', error);
@@ -86,43 +58,32 @@ async function query(sql, params = []) {
     }
 }
 
+// Execute run with error handling (for INSERT/UPDATE/DELETE)
+async function run(sql, params = []) {
+    try {
+        const result = await dbModule.run(sql, params);
+        return result;
+    } catch (error) {
+        console.error('Database run error:', error);
+        throw error;
+    }
+}
+
 // Execute multiple queries in transaction
 async function transaction(queries) {
-    if (useInMemoryDB) {
-        return await inMemoryDB.transaction(async (tx) => {
-            const results = [];
-            for (const { sql, params } of queries) {
-                const rows = await tx.query(sql, params);
-                results.push(rows);
-            }
-            return results;
-        });
-    }
-    
-    const connection = await pool.getConnection();
     try {
-        await connection.beginTransaction();
-        
-        const results = [];
-        for (const { sql, params } of queries) {
-            const [rows] = await connection.execute(sql, params);
-            results.push(rows);
-        }
-        
-        await connection.commit();
+        const results = await dbModule.transaction(queries);
         return results;
     } catch (error) {
-        await connection.rollback();
+        console.error('Database transaction error:', error);
         throw error;
-    } finally {
-        connection.release();
     }
 }
 
 module.exports = {
-    pool,
     testConnection,
     close,
     query,
+    run,
     transaction
 };

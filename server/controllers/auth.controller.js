@@ -1,4 +1,4 @@
-const { query, transaction } = require('../db');
+const { query, run, transaction } = require('../db');
 const { hashPassword, comparePassword } = require('../utils/hash');
 const { generateAccessToken, generateRefreshToken, generateAdminToken } = require('../utils/jwt');
 const config = require('../config');
@@ -31,18 +31,25 @@ async function register(req, res) {
         // Hash password
         const hashedPassword = await hashPassword(password);
 
-        // Create user first
-        const userResult = await query(
+        // Create user first - use run() for INSERT operations
+        const userResult = await run(
             'INSERT INTO users (username, email, phone, password_hash, status) VALUES (?, ?, ?, ?, ?)',
             [username, email, phone || null, hashedPassword, 'active']
         );
         
-        const userId = userResult.insertId;
+        console.log('User result structure:', userResult);
+        
+        // Get the user ID (different for SQLite vs PostgreSQL)
+        const userId = userResult.lastID || (userResult.rows && userResult.rows[0] ? userResult.rows[0].id : null);
+        
+        if (!userId) {
+            throw new Error('Failed to get user ID from database result');
+        }
         
         // Create wallet for the user
         await query(
             'INSERT INTO wallets (user_id, balance) VALUES (?, ?)',
-            [userId, 0] // Start with 0 balance for real money platform
+            [userId, 0] // Start with 0 balance (no bonus)
         );
 
         // Create user object from registration data
@@ -112,7 +119,7 @@ async function login(req, res) {
 
         // Update last login
         await query(
-            'UPDATE users SET last_login = NOW() WHERE id = ?',
+            'UPDATE users SET last_login = datetime("now") WHERE id = ?',
             [user.id]
         );
 
