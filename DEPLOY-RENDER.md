@@ -42,42 +42,23 @@ git push -u origin main
 - Build Command: `npm install`
 - Start Command: `npm start`
 
-**Environment Variables:**
+**Environment Variables (Auto-configured):**
 ```
 NODE_ENV=production
 PORT=10000
-DB_HOST=${your_render_database_host}
-DB_PORT=5432
-DB_USER=${your_render_database_user}
-DB_PASSWORD=${your_render_database_password}
-DB_NAME=${your_render_database_name}
-JWT_SECRET=${generate_a_secure_secret}
+DB_TYPE=memory
+JWT_SECRET=${auto_generated}
 JWT_EXPIRES_IN=24h
-JWT_REFRESH_SECRET=${generate_another_secure_secret}
+JWT_REFRESH_SECRET=${auto_generated}
 JWT_REFRESH_EXPIRES_IN=7d
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=admin123
 ```
 
-### 3. Create Database
-1. In Render Dashboard, click "New +" → "Database"
-2. Choose "PostgreSQL" (free tier)
-3. Name: `wingo-db`
-4. Database name: `wingo_casino`
-5. User: `wingo_user`
-6. After creation, copy the database connection details
+*Note: Render will automatically generate secure JWT secrets*
 
-### 4. Update Environment Variables
-1. Go back to your web service settings
-2. Update the database environment variables with the actual values from your Render database
-3. Set secure JWT secrets
-
-### 5. Run Database Migrations
-After deployment, you'll need to run the database schema:
-
-1. Connect to your Render PostgreSQL database using a tool like pgAdmin or psql
-2. Run the SQL commands from `database/schema.sql`
-3. Or use Render's database console to execute the schema
-
-### 6. Test Deployment
+### 3. Test Deployment
+Since this is a single web service deployment with in-memory database:
 1. Visit your deployed URL (something like `https://wingo-casino.onrender.com`)
 2. Test user registration and login
 3. Verify game functionality

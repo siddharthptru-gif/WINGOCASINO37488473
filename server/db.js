@@ -2,29 +2,36 @@ const mysql = require('mysql2/promise');
 const inMemoryDB = require('./db-memory');
 require('dotenv').config();
 
-// Database configuration
-const dbConfig = {
-    host: process.env.DB_HOST || 'localhost',
-    port: process.env.DB_PORT || 3306,
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'wingo_casino',
-    connectionLimit: 10,
-    queueLimit: 0,
-    acquireTimeout: 60000,
-    timeout: 60000,
-    reconnect: true
-};
+// Check if we should use in-memory database (for Render deployment)
+const useInMemoryDB = process.env.DB_TYPE === 'memory' || process.env.NODE_ENV === 'production';
 
-// Create connection pool
 let pool;
-let useInMemoryDB = false;
 
-try {
-    pool = mysql.createPool(dbConfig);
-} catch (error) {
-    console.log('⚠️  MySQL configuration error, using in-memory database for development');
-    useInMemoryDB = true;
+if (!useInMemoryDB) {
+    // Database configuration for MySQL
+    const dbConfig = {
+        host: process.env.DB_HOST || 'localhost',
+        port: process.env.DB_PORT || 3306,
+        user: process.env.DB_USER || 'root',
+        password: process.env.DB_PASSWORD || '',
+        database: process.env.DB_NAME || 'wingo_casino',
+        connectionLimit: 10,
+        queueLimit: 0,
+        acquireTimeout: 60000,
+        timeout: 60000,
+        reconnect: true
+    };
+    
+    try {
+        pool = mysql.createPool(dbConfig);
+    } catch (error) {
+        console.log('⚠️  MySQL configuration error, falling back to in-memory database');
+        useInMemoryDB = true;
+    }
+}
+
+if (useInMemoryDB) {
+    console.log('🎮 Using in-memory database for deployment');
     inMemoryDB.initializeSampleData();
 }
 

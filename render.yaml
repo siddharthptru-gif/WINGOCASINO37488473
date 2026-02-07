@@ -10,26 +10,8 @@ services:
         value: production
       - key: PORT
         value: 10000
-      - key: DB_HOST
-        fromDatabase:
-          name: wingo-db
-          property: host
-      - key: DB_PORT
-        fromDatabase:
-          name: wingo-db
-          property: port
-      - key: DB_USER
-        fromDatabase:
-          name: wingo-db
-          property: user
-      - key: DB_PASSWORD
-        fromDatabase:
-          name: wingo-db
-          property: password
-      - key: DB_NAME
-        fromDatabase:
-          name: wingo-db
-          property: database
+      - key: DB_TYPE
+        value: memory
       - key: JWT_SECRET
         generateValue: true
       - key: JWT_EXPIRES_IN
@@ -38,9 +20,7 @@ services:
         generateValue: true
       - key: JWT_REFRESH_EXPIRES_IN
         value: 7d
-
-databases:
-  - name: wingo-db
-    databaseName: wingo_casino
-    user: wingo_user
-    plan: free
+      - key: ADMIN_USERNAME
+        value: admin
+      - key: ADMIN_PASSWORD
+        value: admin123
