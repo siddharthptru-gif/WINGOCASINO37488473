@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -18,233 +17,53 @@ const { adminLogin } = require('./controllers/admin.controller');
 
 // Import middleware
 const { authenticateToken } = require('./middleware/auth.middleware');
-const { authenticateAdmin } = require('./middleware/admin.middleware');
 
-// Import scheduler
-const { startGameScheduler } = require('./scheduler');
+// Import database
+const { testConnection } = require('./db');
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-
-// Serve static files
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
 
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-    res.json({
-        status: 'ok',
-        timestamp: new Date().toISOString(),
-        service: 'Wingo Casino API'
-    });
-});
+// Test database connection on startup
+testConnection().catch(console.error);
 
-// API Routes
+// Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/user', authenticateToken, userRoutes);
-app.use('/api/wallet', authenticateToken, walletRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/wallet', walletRoutes);
 app.use('/api/game', gameRoutes);
-app.use('/api/bet', authenticateToken, betRoutes);
-app.use('/api/payment', authenticateToken, paymentRoutes);
+app.use('/api/bets', betRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/payment', paymentRoutes);
 
-// Admin login route (no authentication required)
+// Direct admin login endpoint (for convenience)
 app.post('/api/admin/login', adminLogin);
 
-// Admin routes (require authentication)
-app.use('/api/admin', authenticateAdmin, adminRoutes);
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.json({ status: 'OK', timestamp: new Date().toISOString() });
+});
 
-// Public routes (no auth required)
-app.get('/api/game/status', require('./controllers/game.controller').getCurrentGame);
-app.get('/api/game/history', require('./controllers/game.controller').getGameHistory);
-
-// Serve frontend pages
+// Serve frontend
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
-app.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/login.html'));
-});
-
-app.get('/register', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/register.html'));
-});
-
-app.get('/home', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/home.html'));
-});
-
-app.get('/game-wingo', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/game-wingo.html'));
-});
-
-app.get('/game', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/game-wingo.html'));
-});
-
-app.get('/wallet', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/wallet.html'));
-});
-
-app.get('/history', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/history.html'));
-});
-
-app.get('/profile', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/profile.html'));
-});
-
-app.get('/admin-login', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/admin-login.html'));
-});
-
-app.get('/admin', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/admin.html'));
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error('Unhandled error:', err);
+    res.status(500).json({ error: 'Internal server error' });
 });
 
 // 404 handler
 app.use((req, res) => {
-    res.status(404).json({ error: 'Endpoint not found' });
+    res.status(404).json({ error: 'Route not found' });
 });
 
-// Error handler
-app.use((err, req, res, next) => {
-    console.error('Error:', err);
-    res.status(500).json({ 
-        error: 'Internal server error',
-        message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
-    });
-});
-
-// Start game scheduler
-startGameScheduler();
-
-=======
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
-require('dotenv').config();
-
-// Import routes
-const authRoutes = require('./routes/auth.routes');
-const userRoutes = require('./routes/user.routes');
-const walletRoutes = require('./routes/wallet.routes');
-const gameRoutes = require('./routes/game.routes');
-const betRoutes = require('./routes/bet.routes');
-const adminRoutes = require('./routes/admin.routes');
-const paymentRoutes = require('./routes/payment.routes');
-
-// Import admin controller for direct login route
-const { adminLogin } = require('./controllers/admin.controller');
-
-// Import middleware
-const { authenticateToken } = require('./middleware/auth.middleware');
-const { authenticateAdmin } = require('./middleware/admin.middleware');
-
-// Import scheduler
-const { startGameScheduler } = require('./scheduler');
-
-const app = express();
-
-// Middleware
-app.use(cors());
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-
-// Serve static files
-app.use(express.static(path.join(__dirname, '../public')));
-
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-    res.json({
-        status: 'ok',
-        timestamp: new Date().toISOString(),
-        service: 'Wingo Casino API'
-    });
-});
-
-// API Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/user', authenticateToken, userRoutes);
-app.use('/api/wallet', authenticateToken, walletRoutes);
-app.use('/api/game', gameRoutes);
-app.use('/api/bet', authenticateToken, betRoutes);
-app.use('/api/payment', authenticateToken, paymentRoutes);
-
-// Admin login route (no authentication required)
-app.post('/api/admin/login', adminLogin);
-
-// Admin routes (require authentication)
-app.use('/api/admin', authenticateAdmin, adminRoutes);
-
-// Public routes (no auth required)
-app.get('/api/game/status', require('./controllers/game.controller').getCurrentGame);
-app.get('/api/game/history', require('./controllers/game.controller').getGameHistory);
-
-// Serve frontend pages
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/index.html'));
-});
-
-app.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/login.html'));
-});
-
-app.get('/register', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/register.html'));
-});
-
-app.get('/home', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/home.html'));
-});
-
-app.get('/game-wingo', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/game-wingo.html'));
-});
-
-app.get('/game', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/game-wingo.html'));
-});
-
-app.get('/wallet', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/wallet.html'));
-});
-
-app.get('/history', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/history.html'));
-});
-
-app.get('/profile', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/profile.html'));
-});
-
-app.get('/admin-login', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/admin-login.html'));
-});
-
-app.get('/admin', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/admin.html'));
-});
-
-// 404 handler
-app.use((req, res) => {
-    res.status(404).json({ error: 'Endpoint not found' });
-});
-
-// Error handler
-app.use((err, req, res, next) => {
-    console.error('Error:', err);
-    res.status(500).json({ 
-        error: 'Internal server error',
-        message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
-    });
-});
-
-// Start game scheduler
-startGameScheduler();
-
->>>>>>> ff6db2916f42106ebdfa88d8e8ce71566ff30a08
 module.exports = app;

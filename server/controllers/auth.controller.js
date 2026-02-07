@@ -7,11 +7,11 @@ const config = require('../config');
 async function register(req, res) {
     try {
         console.log('Registration request received:', req.body);
-        const { username, email, password, phone } = req.body;
+        const { username, mobile, password, email, phone } = req.body;
 
         // Validate input
-        if (!username || !email || !password) {
-            return res.status(400).json({ error: 'Username, email, and password are required' });
+        if (!username || !mobile || !password) {
+            return res.status(400).json({ error: 'Username, mobile, and password are required' });
         }
 
         if (password.length < 6) {
@@ -20,12 +20,12 @@ async function register(req, res) {
 
         // Check if user already exists
         const existingUsers = await query(
-            'SELECT id FROM users WHERE username = ? OR email = ?',
-            [username, email]
+            'SELECT id FROM users WHERE username = ? OR mobile = ?',
+            [username, mobile]
         );
 
         if (existingUsers.length > 0) {
-            return res.status(409).json({ error: 'Username or email already exists' });
+            return res.status(409).json({ error: 'Username or mobile already exists' });
         }
 
         // Hash password
@@ -33,8 +33,8 @@ async function register(req, res) {
 
         // Create user first - use run() for INSERT operations
         const userResult = await run(
-            'INSERT INTO users (username, email, phone, password_hash, status) VALUES (?, ?, ?, ?, ?)',
-            [username, email, phone || null, hashedPassword, 'active']
+            'INSERT INTO users (username, mobile, email, phone, password_hash, status) VALUES (?, ?, ?, ?, ?, ?)',
+            [username, mobile, email || null, phone || null, hashedPassword, 'active']
         );
         
         console.log('User result structure:', userResult);
@@ -56,7 +56,8 @@ async function register(req, res) {
         const user = {
             id: userId,
             username: username,
-            email: email,
+            mobile: mobile,
+            email: email || null,
             phone: phone || null
         };
         
@@ -69,6 +70,7 @@ async function register(req, res) {
             user: {
                 id: user.id,
                 username: user.username,
+                mobile: user.mobile,
                 email: user.email,
                 phone: user.phone,
                 created_at: user.created_at
@@ -97,7 +99,7 @@ async function login(req, res) {
 
         // Find user
         const users = await query(
-            'SELECT id, username, email, phone, password_hash, status FROM users WHERE username = ?',
+            'SELECT id, username, mobile, email, phone, password_hash, status FROM users WHERE username = ?',
             [username]
         );
 
@@ -127,6 +129,7 @@ async function login(req, res) {
         const userResponse = {
             id: user.id,
             username: user.username,
+            mobile: user.mobile,
             email: user.email,
             phone: user.phone
         };
@@ -161,7 +164,7 @@ async function refreshToken(req, res) {
         const decoded = require('../utils/jwt').verifyRefreshToken(refresh_token);
         
         const users = await query(
-            'SELECT id, username, email, phone FROM users WHERE id = ?',
+            'SELECT id, username, mobile, email, phone FROM users WHERE id = ?',
             [decoded.userId]
         );
 
