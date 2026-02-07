@@ -6,6 +6,7 @@ const config = require('../config');
 // User registration
 async function register(req, res) {
     try {
+        console.log('Registration request received:', req.body);
         const { username, email, password, phone } = req.body;
 
         // Validate input
@@ -30,28 +31,29 @@ async function register(req, res) {
         // Hash password
         const hashedPassword = await hashPassword(password);
 
-        // Create user and wallet in transaction
-        const queries = [
-            {
-                sql: 'INSERT INTO users (username, email, phone, password) VALUES (?, ?, ?, ?)',
-                params: [username, email, phone || null, hashedPassword]
-            },
-            {
-                sql: 'INSERT INTO wallets (user_id, balance) VALUES (LAST_INSERT_ID(), ?)',
-                params: [0] // Start with 0 balance for real money platform
-            }
-        ];
-
-        const results = await transaction(queries);
-        const userId = results[0].insertId;
-
-        // Get created user
-        const users = await query(
-            'SELECT id, username, email, phone, created_at FROM users WHERE id = ?',
-            [userId]
+        // Create user first
+        const userResult = await query(
+            'INSERT INTO users (username, email, phone, password_hash) VALUES (?, ?, ?, ?)',
+            [username, email, phone || null, hashedPassword]
+        );
+        
+        const userId = userResult.insertId;
+        
+        // Create wallet for the user
+        await query(
+            'INSERT INTO wallets (user_id, balance) VALUES (?, ?)',
+            [userId, 0] // Start with 0 balance for real money platform
         );
 
-        const user = users[0];
+        // Create user object from registration data
+        const user = {
+            id: userId,
+            username: username,
+            email: email,
+            phone: phone || null
+        };
+        
+        console.log('User object created:', user);
         const accessToken = generateAccessToken(user);
         const refreshToken = generateRefreshToken(user);
 
@@ -72,7 +74,8 @@ async function register(req, res) {
 
     } catch (error) {
         console.error('Registration error:', error);
-        res.status(500).json({ error: 'Registration failed' });
+        console.error('Error stack:', error.stack);
+        res.status(500).json({ error: 'Registration failed', details: error.message });
     }
 }
 
@@ -87,7 +90,7 @@ async function login(req, res) {
 
         // Find user
         const users = await query(
-            'SELECT id, username, email, phone, password, status FROM users WHERE username = ?',
+            'SELECT id, username, email, phone, password_hash, status FROM users WHERE username = ?',
             [username]
         );
 

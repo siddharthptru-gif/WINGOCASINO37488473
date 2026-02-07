@@ -33,13 +33,22 @@ class InMemoryDB {
         return new Promise((resolve, reject) => {
             try {
                 // Extract table name from SQL (very basic parsing)
-                const tableMatch = sql.match(/FROM\s+(\w+)/i);
-                if (!tableMatch) {
-                    resolve([]);
-                    return;
+                let table;
+                if (sql.toUpperCase().startsWith('INSERT')) {
+                    const tableMatch = sql.match(/INTO\s+(\w+)/i);
+                    if (!tableMatch) {
+                        resolve({ insertId: null });
+                        return;
+                    }
+                    table = tableMatch[1];
+                } else {
+                    const tableMatch = sql.match(/FROM\s+(\w+)/i);
+                    if (!tableMatch) {
+                        resolve([]);
+                        return;
+                    }
+                    table = tableMatch[1];
                 }
-                
-                const table = tableMatch[1];
                 const data = this.data[table] || [];
                 
                 // Handle SELECT queries
@@ -117,7 +126,7 @@ class InMemoryDB {
             id: 1,
             username: 'admin',
             email: 'admin@wingocasino.com',
-            password_hash: '$2b$10$example_hash', // This would be a real bcrypt hash
+            password: '$2b$10$example_hash', // This would be a real bcrypt hash
             role: 'super_admin',
             status: 'active',
             created_at: new Date(),
@@ -129,7 +138,7 @@ class InMemoryDB {
             id: 1,
             username: 'demo_user',
             email: 'demo@example.com',
-            password_hash: '$2b$10$example_hash',
+            password: '$2b$10$example_hash',
             phone: '1234567890',
             status: 'active',
             created_at: new Date(),

@@ -3,7 +3,7 @@ const inMemoryDB = require('./db-memory');
 require('dotenv').config();
 
 // Check if we should use in-memory database (for Render deployment)
-const useInMemoryDB = process.env.DB_TYPE === 'memory' || process.env.NODE_ENV === 'production';
+let useInMemoryDB = process.env.DB_TYPE === 'memory' || process.env.NODE_ENV === 'production';
 
 let pool;
 
