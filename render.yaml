@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 services:
   - type: web
     name: wingo-casino
@@ -25,4 +26,33 @@ services:
       - key: ADMIN_USERNAME
         value: admin
       - key: ADMIN_PASSWORD
+=======
+services:
+  - type: web
+    name: wingo-casino
+    env: node
+    plan: free
+    buildCommand: |
+      mkdir -p database
+      npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DB_TYPE
+        value: memory
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 24h
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_EXPIRES_IN
+        value: 7d
+      - key: ADMIN_USERNAME
+        value: admin
+      - key: ADMIN_PASSWORD
+>>>>>>> ff6db2916f42106ebdfa88d8e8ce71566ff30a08
         value: admin123

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // Use PostgreSQL in production, SQLite in development
 const isProduction = process.env.NODE_ENV === 'production';
 const dbModule = isProduction ? require('./db-postgres') : require('./db-sqlite');
@@ -56,4 +57,64 @@ module.exports = {
     close,
     query,
     transaction
+=======
+// Use PostgreSQL in production, SQLite in development
+const isProduction = process.env.NODE_ENV === 'production';
+const dbModule = isProduction ? require('./db-postgres') : require('./db-sqlite');
+require('dotenv').config();
+
+// Use SQLite for persistent storage
+console.log('🎮 Using SQLite database for persistent storage');
+
+// Test database connection
+async function testConnection() {
+    try {
+        // Test SQLite connection
+        await sqliteDB.query('SELECT 1');
+        console.log('✅ SQLite database connected successfully');
+        return true;
+    } catch (error) {
+        console.error('❌ SQLite connection failed:', error.message);
+        return false;
+    }
+}
+
+// Close all connections
+async function close() {
+    try {
+        await sqliteDB.close();
+        console.log('🔒 SQLite database closed');
+    } catch (error) {
+        console.error('Error closing SQLite database:', error);
+    }
+}
+
+// Execute query with error handling
+async function query(sql, params = []) {
+    try {
+        const rows = await sqliteDB.query(sql, params);
+        return rows;
+    } catch (error) {
+        console.error('Database query error:', error);
+        throw error;
+    }
+}
+
+// Execute multiple queries in transaction
+async function transaction(queries) {
+    try {
+        const results = await sqliteDB.transaction(queries);
+        return results;
+    } catch (error) {
+        console.error('Database transaction error:', error);
+        throw error;
+    }
+}
+
+module.exports = {
+    testConnection,
+    close,
+    query,
+    transaction
+>>>>>>> ff6db2916f42106ebdfa88d8e8ce71566ff30a08
 };
