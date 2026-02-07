@@ -118,7 +118,7 @@ async function getAllUsers(req, res) {
         params.push(parseInt(offset));
 
         const users = await query(
-            `SELECT u.id, u.username, u.email, u.phone, u.status, u.created_at, u.last_login,
+            `SELECT u.id, u.username, u.mobile, u.phone, u.status, u.created_at, u.last_login,
                     w.balance
              FROM users u
              JOIN wallets w ON u.id = w.user_id

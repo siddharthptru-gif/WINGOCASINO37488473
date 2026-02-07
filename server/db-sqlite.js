@@ -16,7 +16,7 @@ class SqliteDatabase {
                 CREATE TABLE IF NOT EXISTS users (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     username TEXT UNIQUE NOT NULL,
-                    email TEXT UNIQUE NOT NULL,
+                    mobile TEXT UNIQUE NOT NULL,
                     phone TEXT,
                     password_hash TEXT NOT NULL,
                     status TEXT DEFAULT 'active',
