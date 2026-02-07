@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wingo Game - Wingo Casino</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            color: white;
+            overflow-x: hidden;
+        }
+        .game-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .game-header {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .betting-board {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .bet-button {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            font-weight: bold;
+        }
+        .bet-button:hover {
+            background: rgba(0, 255, 255, 0.2);
+            border-color: #00ffff;
+            transform: translateY(-3px);
+        }
+        .bet-button.selected {
+            background: #00ffff;
+            color: black;
+            border-color: #00ffff;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+        .big-small {
+            grid-column: span 2;
+        }
+        .result-display {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid rgba(0, 255, 255, 0.5);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .result-number {
+            font-size: 4rem;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .countdown {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #00ffff;
+        }
+        .bet-history {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .win-animation {
+            animation: winPulse 1s infinite;
+        }
+        @keyframes winPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .loss-animation {
+            animation: lossShake 0.5s;
+        }
+        @keyframes lossShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Header with balance and back button -->
+        <div class="game-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <button class="btn btn-outline-light" onclick="window.location.href='/home'">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </button>
+                <div>
+                    <h2>🎲 Wingo 1-Minute</h2>
+                    <p>Place your bets before time runs out!</p>
+                </div>
+                <div class="text-end">
+                    <div>Balance: <span id="balance" class="fw-bold">₹0.00</span></div>
+                    <button class="btn btn-sm btn-info mt-2" onclick="window.location.href='/wallet'">
+                        <i class="fas fa-plus"></i> Add Money
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Left Column - Betting Board -->
+            <div class="col-md-8">
+                <div class="card bg-dark">
+                    <div class="card-header">
+                        <h4>Place Your Bet</h4>
+                        <div class="text-center">
+                            <div class="countdown" id="countdown">60s</div>
+                            <div class="text-muted">Time Remaining</div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="betting-board">
+                            <!-- Big/Small -->
+                            <div class="bet-button big-small" data-type="big_small" data-value="big">
+                                Big (5-9)<br><small>2x payout</small>
+                            </div>
+                            <div class="bet-button big-small" data-type="big_small" data-value="small">
+                                Small (0-4)<br><small>2x payout</small>
+                            </div>
+                            
+                            <!-- Colors -->
+                            <div class="bet-button" data-type="color" data-value="red" style="color: #ff4444;">
+                                Red (2,4,6,8)<br><small>2x payout</small>
+                            </div>
+                            <div class="bet-button" data-type="color" data-value="green" style="color: #44ff44;">
+                                Green (1,3,7,9)<br><small>2x payout</small>
+                            </div>
+                            <div class="bet-button" data-type="color" data-value="violet" style="color: #ff44ff;">
+                                Violet (0,5)<br><small>4.5x payout</small>
+                            </div>
+                            
+                            <!-- Numbers -->
+                            <div class="bet-button" data-type="number" data-value="0">0<br><small>9x payout</small></div>
+                            <div class="bet-button" data-type="number" data-value="1">1<br><small>9x payout</small></div>
+                            <div class="bet-button" data-type="number" data-value="2">2<br><small>9x payout</small></div>
+                            <div class="bet-button" data-type="number" data-value="3">3<br><small>9x payout</small></div>
+                            <div class="bet-button" data-type="number" data-value="4">4<br><small>9x payout</small></div>
+                            <div class="bet-button" data-type="number" data-value="5">5<br><small>9x payout</small></div>
+                            <div class="bet-button" data-type="number" data-value="6">6<br><small>9x payout</small></div>
+                            <div class="bet-button" data-type="number" data-value="7">7<br><small>9x payout</small></div>
+                            <div class="bet-button" data-type="number" data-value="8">8<br><small>9x payout</small></div>
+                            <div class="bet-button" data-type="number" data-value="9">9<br><small>9x payout</small></div>
+                        </div>
+
+                        <!-- Bet Amount and Place Bet -->
+                        <div class="mt-4">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label">Bet Amount (₹)</label>
+                                    <input type="number" class="form-control bg-dark text-white" id="betAmount" min="10" max="50000" value="100" step="10">
+                                    <div class="form-text">Min: ₹10, Max: ₹50,000</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Quick Amounts</label>
+                                    <div>
+                                        <button class="btn btn-outline-info btn-sm me-1" onclick="setBetAmount(10)">₹10</button>
+                                        <button class="btn btn-outline-info btn-sm me-1" onclick="setBetAmount(50)">₹50</button>
+                                        <button class="btn btn-outline-info btn-sm me-1" onclick="setBetAmount(100)">₹100</button>
+                                        <button class="btn btn-outline-info btn-sm me-1" onclick="setBetAmount(500)">₹500</button>
+                                        <button class="btn btn-outline-info btn-sm" onclick="setBetAmount(1000)">₹1000</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-center mt-3">
+                                <button class="btn btn-success btn-lg" id="placeBetBtn" onclick="placeBet()">
+                                    <i class="fas fa-coins me-2"></i>Place Bet
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Results and History -->
+            <div class="col-md-4">
+                <!-- Current Result -->
+                <div class="result-display">
+                    <h4>Current Result</h4>
+                    <div id="currentResult">
+                        <div class="result-number">?</div>
+                    </div>
+                    <div id="resultMessage"></div>
+                </div>
+
+                <!-- Recent Results -->
+                <div class="card bg-dark">
+                    <div class="card-header">
+                        <h5><i class="fas fa-history me-2"></i>Recent Results</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="recentResults" class="d-flex flex-wrap">
+                            <p class="text-muted">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bet History -->
+                <div class="card bg-dark mt-3">
+                    <div class="card-header">
+                        <h5><i class="fas fa-list me-2"></i>Your Bets</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="betHistory" class="bet-history">
+                            <p class="text-muted text-center">No bets placed yet</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Authentication check
+        const token = localStorage.getItem('access_token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+        if (!token || !user.id) {
+            window.location.href = '/login';
+        }
+
+        let selectedBet = null;
+        let bettingOpen = true;
+
+        // Set quick bet amount
+        function setBetAmount(amount) {
+            document.getElementById('betAmount').value = amount;
+        }
+
+        // Select bet
+        document.querySelectorAll('.bet-button').forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove previous selection
+                document.querySelectorAll('.bet-button').forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+                
+                // Select current button
+                this.classList.add('selected');
+                selectedBet = {
+                    type: this.dataset.type,
+                    value: this.dataset.value
+                };
+            });
+        });
+
+        // Place bet
+        async function placeBet() {
+            if (!selectedBet) {
+                alert('Please select a bet type first!');
+                return;
+            }
+
+            const amount = parseInt(document.getElementById('betAmount').value);
+            if (amount < 10 || amount > 50000) {
+                alert('Bet amount must be between ₹10 and ₹50,000');
+                return;
+            }
+
+            if (!bettingOpen) {
+                alert('Betting is currently closed. Please wait for the next round.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/bet/place', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        game_type: 'wingo_1min',
+                        bet_type: selectedBet.type,
+                        bet_value: selectedBet.value,
+                        amount: amount
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert(`Bet placed successfully! Bet ID: ${data.bet.id}`);
+                    loadUserData();
+                    loadBetHistory();
+                    // Reset selection
+                    document.querySelectorAll('.bet-button').forEach(btn => {
+                        btn.classList.remove('selected');
+                    });
+                    selectedBet = null;
+                } else {
+                    alert(`Error: ${data.error}`);
+                }
+            } catch (error) {
+                alert('Network error. Please try again.');
+            }
+        }
+
+        // Load user data
+        async function loadUserData() {
+            try {
+                const response = await fetch('/api/user/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('balance').textContent = `₹${data.wallet.balance.toFixed(2)}`;
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
+        }
+
+        // Load recent results
+        async function loadRecentResults() {
+            try {
+                const response = await fetch('/api/game/history?limit=15');
+                if (response.ok) {
+                    const data = await response.json();
+                    const resultsDiv = document.getElementById('recentResults');
+                    
+                    if (data.results.length > 0) {
+                        let html = '';
+                        data.results.slice(0, 15).forEach(result => {
+                            const colorClass = getResultColor(result.result);
+                            html += `<span class="badge ${colorClass} me-1 mb-1" style="font-size: 1rem; padding: 8px 12px;">${result.result}</span>`;
+                        });
+                        resultsDiv.innerHTML = html;
+                    } else {
+                        resultsDiv.innerHTML = '<p class="text-muted">No results yet</p>';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading results:', error);
+            }
+        }
+
+        // Load bet history
+        async function loadBetHistory() {
+            try {
+                const response = await fetch('/api/bet/history?limit=10', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const historyDiv = document.getElementById('betHistory');
+                    
+                    if (data.bets.length > 0) {
+                        let html = '';
+                        data.bets.forEach(bet => {
+                            const statusClass = bet.status === 'won' ? 'text-success' : 
+                                              bet.status === 'lost' ? 'text-danger' : 'text-warning';
+                            const statusIcon = bet.status === 'won' ? '✅' : 
+                                             bet.status === 'lost' ? '❌' : '⏳';
+                            html += `
+                                <div class="mb-2 p-2 bg-black bg-opacity-50 rounded">
+                                    <div class="d-flex justify-content-between">
+                                        <span>${bet.bet_type}: ${bet.bet_value}</span>
+                                        <span class="${statusClass}">${statusIcon} ₹${bet.amount}</span>
+                                    </div>
+                                    <small class="text-muted">${new Date(bet.created_at).toLocaleTimeString()}</small>
+                                </div>
+                            `;
+                        });
+                        historyDiv.innerHTML = html;
+                    } else {
+                        historyDiv.innerHTML = '<p class="text-muted text-center">No bets placed yet</p>';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading bet history:', error);
+            }
+        }
+
+        // Get result color class
+        function getResultColor(result) {
+            const num = parseInt(result);
+            if (num === 0 || num === 5) return 'bg-purple';
+            if ([1,3,7,9].includes(num)) return 'bg-success';
+            if ([2,4,6,8].includes(num)) return 'bg-danger';
+            return 'bg-secondary';
+        }
+
+        // Add custom CSS for purple
+        const style = document.createElement('style');
+        style.textContent = `
+            .bg-purple { background-color: #800080 !important; }
+        `;
+        document.head.appendChild(style);
+
+        // Countdown and game logic
+        function updateCountdown() {
+            const now = new Date();
+            const seconds = now.getSeconds();
+            const remaining = 60 - seconds;
+            
+            document.getElementById('countdown').textContent = `${remaining}s`;
+            
+            // Control betting window
+            if (remaining <= 5) {
+                bettingOpen = false;
+                document.getElementById('placeBetBtn').disabled = true;
+                document.getElementById('placeBetBtn').textContent = 'Betting Closed';
+            } else {
+                bettingOpen = true;
+                document.getElementById('placeBetBtn').disabled = false;
+                document.getElementById('placeBetBtn').innerHTML = '<i class="fas fa-coins me-2"></i>Place Bet';
+            }
+            
+            // New round starts
+            if (seconds === 0) {
+                loadRecentResults();
+                loadBetHistory();
+                document.getElementById('currentResult').innerHTML = '<div class="result-number">?</div>';
+                document.getElementById('resultMessage').innerHTML = '';
+            }
+        }
+
+        // Initialize
+        loadUserData();
+        loadRecentResults();
+        loadBetHistory();
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+        setInterval(loadUserData, 30000);
+    </script>
+</body>
+</html>

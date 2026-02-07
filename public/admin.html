@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Wingo Casino</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            min-height: 100vh;
+            color: white;
+        }
+        .sidebar {
+            background: rgba(0, 0, 0, 0.9);
+            height: 100vh;
+            position: fixed;
+            width: 280px;
+            border-right: 2px solid rgba(0, 255, 255, 0.5);
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.5);
+        }
+        .main-content {
+            margin-left: 280px;
+            padding: 20px;
+        }
+        .card {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 15px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+        .admin-header {
+            background: linear-gradient(45deg, #ff0080, #ff8c00);
+            color: white;
+            border: none;
+        }
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s;
+            border-radius: 8px;
+            margin: 5px 10px;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #ff0080;
+            background: rgba(255, 0, 128, 0.1);
+            transform: translateX(5px);
+        }
+        .stat-card {
+            background: linear-gradient(45deg, #00ffff, #0080ff);
+            color: black;
+            border: none;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .table {
+            color: white;
+        }
+        .table th {
+            background: rgba(0, 255, 255, 0.2);
+            border-color: rgba(0, 255, 255, 0.3);
+        }
+        .table td {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        .form-control {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #ff0080;
+            box-shadow: 0 0 0 0.25rem rgba(255, 0, 128, 0.25);
+            color: white;
+        }
+        .btn-admin {
+            background: linear-gradient(45deg, #ff0080, #ff8c00);
+            border: none;
+            color: white;
+            font-weight: bold;
+        }
+        .btn-admin:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 0, 128, 0.4);
+        }
+        .game-control-active {
+            background: linear-gradient(45deg, #00ff00, #00cc00);
+            color: black;
+        }
+        .game-control-inactive {
+            background: linear-gradient(45deg, #ff3333, #cc0000);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="p-4">
+            <h3 class="text-center mb-4">🎮 ADMIN PANEL</h3>
+            <hr class="text-info">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" onclick="showSection('dashboard')">
+                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="showSection('users')">
+                        <i class="fas fa-users me-2"></i>User Management
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="showSection('game-control')">
+                        <i class="fas fa-gamepad me-2"></i>Game Control
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="showSection('bets')">
+                        <i class="fas fa-coins me-2"></i>Bet Management
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="showSection('transactions')">
+                        <i class="fas fa-exchange-alt me-2"></i>Transactions
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="showSection('reports')">
+                        <i class="fas fa-chart-bar me-2"></i>Reports
+                    </a>
+                </li>
+                <li class="nav-item mt-4">
+                    <a class="nav-link text-danger" href="#" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="container-fluid">
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="section">
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <h1><i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard</h1>
+                        <p>Welcome to the Wingo Casino Admin Panel</p>
+                    </div>
+                </div>
+
+                <!-- Statistics Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <h5>Total Users</h5>
+                                <h2 id="totalUsers">0</h2>
+                                <i class="fas fa-users fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <h5>Active Games</h5>
+                                <h2 id="activeGames">0</h2>
+                                <i class="fas fa-dice fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <h5>Total Revenue</h5>
+                                <h2 id="totalRevenue">₹0.00</h2>
+                                <i class="fas fa-rupee-sign fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <h5>Pending Withdrawals</h5>
+                                <h2 id="pendingWithdrawals">0</h2>
+                                <i class="fas fa-hourglass-half fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4><i class="fas fa-bolt me-2"></i>Quick Actions</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-3 mb-3">
+                                        <button class="btn btn-success w-100" onclick="showSection('game-control')">
+                                            <i class="fas fa-play-circle me-2"></i>Start Game
+                                        </button>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <button class="btn btn-warning w-100" onclick="showSection('users')">
+                                            <i class="fas fa-user-plus me-2"></i>Manage Users
+                                        </button>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <button class="btn btn-info w-100" onclick="showSection('bets')">
+                                            <i class="fas fa-search me-2"></i>View Bets
+                                        </button>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <button class="btn btn-secondary w-100" onclick="showSection('reports')">
+                                            <i class="fas fa-file-alt me-2"></i>Generate Reports
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Management Section -->
+            <div id="users-section" class="section" style="display: none;">
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <h1><i class="fas fa-users-cog me-2"></i>User Management</h1>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>All Users</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Username</th>
+                                                <th>Email</th>
+                                                <th>Balance</th>
+                                                <th>Status</th>
+                                                <th>Joined</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="usersTable">
+                                            <tr>
+                                                <td colspan="7" class="text-center">Loading users...</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game Control Section -->
+            <div id="game-control-section" class="section" style="display: none;">
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <h1><i class="fas fa-gamepad me-2"></i>Game Control</h1>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Current Game Status</h4>
+                            </div>
+                            <div class="card-body text-center">
+                                <div id="gameStatus" class="game-control-inactive p-3 rounded mb-3">
+                                    <h3>Game Inactive</h3>
+                                    <p>Next game will start in <span id="nextGameTimer">60</span> seconds</p>
+                                </div>
+                                <button id="toggleGameBtn" class="btn btn-success" onclick="toggleGame()">
+                                    <i class="fas fa-play me-2"></i>Start Game
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Force Game Result</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Select Result (0-9)</label>
+                                    <select class="form-control" id="forceResult">
+                                        <option value="0">0 - Violet</option>
+                                        <option value="1">1 - Green</option>
+                                        <option value="2">2 - Red</option>
+                                        <option value="3">3 - Green</option>
+                                        <option value="4">4 - Red</option>
+                                        <option value="5">5 - Violet</option>
+                                        <option value="6">6 - Red</option>
+                                        <option value="7">7 - Green</option>
+                                        <option value="8">8 - Red</option>
+                                        <option value="9">9 - Green</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-warning w-100" onclick="forceResult()">
+                                    <i class="fas fa-bolt me-2"></i>Force Result
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other sections would be implemented similarly -->
+            <div id="bets-section" class="section" style="display: none;">
+                <h1>Bet Management</h1>
+                <p>This section would show all active and historical bets.</p>
+            </div>
+
+            <div id="transactions-section" class="section" style="display: none;">
+                <h1>Transaction Management</h1>
+                <p>This section would show all financial transactions.</p>
+            </div>
+
+            <div id="reports-section" class="section" style="display: none;">
+                <h1>Reports</h1>
+                <p>This section would show various analytical reports.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Authentication check
+        const token = localStorage.getItem('admin_token');
+
+        if (!token) {
+            alert('Admin access required');
+            window.location.href = '/admin-login';
+        }
+
+        // Show section
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Show selected section
+            document.getElementById(`${sectionId}-section`).style.display = 'block';
+            
+            // Update active nav link
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Load section data
+            switch(sectionId) {
+                case 'dashboard':
+                    loadDashboardData();
+                    break;
+                case 'users':
+                    loadUsers();
+                    break;
+                case 'game-control':
+                    loadGameControl();
+                    break;
+            }
+        }
+
+        // Load dashboard data
+        async function loadDashboardData() {
+            try {
+                // In a real implementation, this would call admin API endpoints
+                document.getElementById('totalUsers').textContent = '1,247';
+                document.getElementById('activeGames').textContent = '15';
+                document.getElementById('totalRevenue').textContent = '₹2,45,680.50';
+                document.getElementById('pendingWithdrawals').textContent = '23';
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+            }
+        }
+
+        // Load users
+        async function loadUsers() {
+            try {
+                const response = await fetch('/api/admin/users', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const tbody = document.getElementById('usersTable');
+                    
+                    if (data.users.length > 0) {
+                        tbody.innerHTML = data.users.map(user => `
+                            <tr>
+                                <td>${user.id}</td>
+                                <td>${user.username}</td>
+                                <td>${user.email}</td>
+                                <td>₹${user.balance.toFixed(2)}</td>
+                                <td><span class="badge bg-${user.status === 'active' ? 'success' : 'danger'}">${user.status}</span></td>
+                                <td>${new Date(user.created_at).toLocaleDateString()}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary me-1" onclick="editUser(${user.id})">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-warning me-1" onclick="adjustBalance(${user.id})">
+                                        <i class="fas fa-rupee-sign"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="banUser(${user.id})">
+                                        <i class="fas fa-ban"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `).join('');
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="7" class="text-center">No users found</td></tr>';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading users:', error);
+            }
+        }
+
+        // Load game control
+        function loadGameControl() {
+            // Update game timer
+            let seconds = 60;
+            const timer = setInterval(() => {
+                document.getElementById('nextGameTimer').textContent = seconds;
+                seconds--;
+                if (seconds < 0) seconds = 60;
+            }, 1000);
+        }
+
+        // Toggle game
+        function toggleGame() {
+            const btn = document.getElementById('toggleGameBtn');
+            const status = document.getElementById('gameStatus');
+            
+            if (btn.classList.contains('btn-success')) {
+                // Start game
+                btn.classList.remove('btn-success');
+                btn.classList.add('btn-danger');
+                btn.innerHTML = '<i class="fas fa-stop me-2"></i>Stop Game';
+                status.classList.remove('game-control-inactive');
+                status.classList.add('game-control-active');
+                status.innerHTML = '<h3>Game Active</h3><p>Games running every 60 seconds</p>';
+            } else {
+                // Stop game
+                btn.classList.remove('btn-danger');
+                btn.classList.add('btn-success');
+                btn.innerHTML = '<i class="fas fa-play me-2"></i>Start Game';
+                status.classList.remove('game-control-active');
+                status.classList.add('game-control-inactive');
+                status.innerHTML = '<h3>Game Inactive</h3><p>Next game will start in <span id="nextGameTimer">60</span> seconds</p>';
+            }
+        }
+
+        // Force result
+        async function forceResult() {
+            const result = document.getElementById('forceResult').value;
+            
+            try {
+                const response = await fetch('/api/admin/force-result', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ result })
+                });
+                
+                if (response.ok) {
+                    alert(`Game result forced to: ${result}`);
+                } else {
+                    const data = await response.json();
+                    alert(`Error: ${data.error}`);
+                }
+            } catch (error) {
+                alert('Error forcing result');
+            }
+        }
+
+        // User management functions
+        function editUser(userId) {
+            alert(`Edit user ${userId} functionality would be implemented here`);
+        }
+
+        function adjustBalance(userId) {
+            const amount = prompt('Enter amount to adjust:');
+            if (amount && !isNaN(amount)) {
+                alert(`Adjust balance for user ${userId} by ₹${amount}`);
+                // Implementation would call API to adjust balance
+            }
+        }
+
+        function banUser(userId) {
+            if (confirm(`Are you sure you want to ban user ${userId}?`)) {
+                alert(`User ${userId} banned`);
+                // Implementation would call API to ban user
+            }
+        }
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('admin_token');
+            window.location.href = '/admin-login';
+        });
+
+        // Initialize
+        loadDashboardData();
+    </script>
+</body>
+</html>

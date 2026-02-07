@@ -1,0 +1,807 @@
+[
+  {
+    "period": 29503820,
+    "number": 8,
+    "color": "red",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T18:21:01.558Z"
+  },
+  {
+    "period": 29503821,
+    "number": 5,
+    "color": "violet",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T18:22:02.991Z"
+  },
+  {
+    "period": 29503822,
+    "number": 0,
+    "color": "violet",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T18:23:04.362Z"
+  },
+  {
+    "period": 29503823,
+    "number": 8,
+    "color": "red",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T18:24:05.769Z"
+  },
+  {
+    "period": 29503824,
+    "number": 5,
+    "color": "violet",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T18:25:07.270Z"
+  },
+  {
+    "period": 29503825,
+    "number": 6,
+    "color": "red",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T18:26:08.705Z"
+  },
+  {
+    "period": 29503826,
+    "number": 3,
+    "color": "green",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T18:27:10.144Z"
+  },
+  {
+    "period": 29503827,
+    "number": 1,
+    "color": "green",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T18:28:11.619Z"
+  },
+  {
+    "period": 29503828,
+    "number": 1,
+    "color": "green",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T18:29:13.071Z"
+  },
+  {
+    "period": 29503829,
+    "number": 1,
+    "color": "green",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T18:30:14.541Z"
+  },
+  {
+    "period": 29503830,
+    "number": 1,
+    "color": "green",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T18:31:16.023Z"
+  },
+  {
+    "period": 29503831,
+    "number": 1,
+    "color": "green",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T18:32:17.439Z"
+  },
+  {
+    "period": 29503832,
+    "number": 9,
+    "color": "green",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T18:33:18.908Z"
+  },
+  {
+    "period": 29503833,
+    "number": 2,
+    "color": "red",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T18:34:20.392Z"
+  },
+  {
+    "period": 29503834,
+    "number": 8,
+    "color": "red",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T18:35:21.862Z"
+  },
+  {
+    "period": 29503835,
+    "number": 0,
+    "color": "violet",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T18:36:23.331Z"
+  },
+  {
+    "period": 29503836,
+    "number": 2,
+    "color": "red",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T18:37:24.785Z"
+  },
+  {
+    "period": 29503837,
+    "number": 8,
+    "color": "red",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T18:38:26.252Z"
+  },
+  {
+    "period": 29503838,
+    "number": 6,
+    "color": "red",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T18:39:27.637Z"
+  },
+  {
+    "period": 29503839,
+    "number": 8,
+    "color": "red",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T18:40:29.089Z"
+  },
+  {
+    "period": 29503840,
+    "number": 7,
+    "color": "green",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T18:41:30.493Z"
+  },
+  {
+    "period": 29503841,
+    "number": 5,
+    "color": "violet",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T18:42:31.924Z"
+  },
+  {
+    "period": 29503842,
+    "number": 8,
+    "color": "red",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T18:43:33.440Z"
+  },
+  {
+    "period": 29503843,
+    "number": 8,
+    "color": "red",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T18:44:34.882Z"
+  },
+  {
+    "period": 29503844,
+    "number": 0,
+    "color": "violet",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T18:45:36.362Z"
+  },
+  {
+    "period": 29503845,
+    "number": 3,
+    "color": "green",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T18:46:37.846Z"
+  },
+  {
+    "period": 29503846,
+    "number": 7,
+    "color": "green",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T18:47:39.207Z"
+  },
+  {
+    "period": 29503847,
+    "number": 7,
+    "color": "green",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T18:48:40.585Z"
+  },
+  {
+    "period": 29503848,
+    "number": 9,
+    "color": "green",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T18:49:42.070Z"
+  },
+  {
+    "period": 29503849,
+    "number": 6,
+    "color": "red",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T18:50:43.473Z"
+  },
+  {
+    "period": 29503850,
+    "number": 6,
+    "color": "red",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T18:51:44.877Z"
+  },
+  {
+    "period": 29503851,
+    "number": 6,
+    "color": "red",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T18:52:46.296Z"
+  },
+  {
+    "period": 29503852,
+    "number": 1,
+    "color": "green",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T18:53:47.744Z"
+  },
+  {
+    "period": 29503853,
+    "number": 7,
+    "color": "green",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T18:54:49.186Z"
+  },
+  {
+    "period": 29503854,
+    "number": 4,
+    "color": "red",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T18:55:50.743Z"
+  },
+  {
+    "period": 29503855,
+    "number": 7,
+    "color": "green",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T18:56:52.143Z"
+  },
+  {
+    "period": 29503856,
+    "number": 9,
+    "color": "green",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T18:57:53.582Z"
+  },
+  {
+    "period": 29503857,
+    "number": 6,
+    "color": "red",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T18:58:54.986Z"
+  },
+  {
+    "period": 29503858,
+    "number": 4,
+    "color": "red",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T18:59:56.304Z"
+  },
+  {
+    "period": 29503859,
+    "number": 5,
+    "color": "violet",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T19:00:57.656Z"
+  },
+  {
+    "period": 29503860,
+    "number": 1,
+    "color": "green",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T19:01:59.053Z"
+  },
+  {
+    "period": 29503861,
+    "number": 4,
+    "color": "red",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T19:03:00.421Z"
+  },
+  {
+    "period": 29503862,
+    "number": 5,
+    "color": "violet",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T19:04:01.821Z"
+  },
+  {
+    "period": 29503863,
+    "number": 0,
+    "color": "violet",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T19:05:03.238Z"
+  },
+  {
+    "period": 29503864,
+    "number": 8,
+    "color": "red",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T19:06:04.651Z"
+  },
+  {
+    "period": 29503865,
+    "number": 1,
+    "color": "green",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T19:07:06.005Z"
+  },
+  {
+    "period": 29503866,
+    "number": 2,
+    "color": "red",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T19:08:07.364Z"
+  },
+  {
+    "period": 29503867,
+    "number": 1,
+    "color": "green",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T19:09:08.691Z"
+  },
+  {
+    "period": 29503868,
+    "number": 4,
+    "color": "red",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T19:10:10.088Z"
+  },
+  {
+    "period": 29503869,
+    "number": 8,
+    "color": "red",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T19:11:11.472Z"
+  },
+  {
+    "period": 29503870,
+    "number": 9,
+    "color": "green",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T19:12:13.032Z"
+  },
+  {
+    "period": 29503871,
+    "number": 8,
+    "color": "red",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T19:13:14.450Z"
+  },
+  {
+    "period": 29503872,
+    "number": 3,
+    "color": "green",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T19:14:15.921Z"
+  },
+  {
+    "period": 29503873,
+    "number": 4,
+    "color": "red",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T19:15:17.455Z"
+  },
+  {
+    "period": 29503874,
+    "number": 1,
+    "color": "green",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T19:16:18.821Z"
+  },
+  {
+    "period": 29503875,
+    "number": 2,
+    "color": "red",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T19:17:20.033Z"
+  },
+  {
+    "period": 29503876,
+    "number": 8,
+    "color": "red",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T19:18:21.356Z"
+  },
+  {
+    "period": 29503877,
+    "number": 6,
+    "color": "red",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T19:19:22.767Z"
+  },
+  {
+    "period": 29503878,
+    "number": 6,
+    "color": "red",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T19:20:24.188Z"
+  },
+  {
+    "period": 29503879,
+    "number": 9,
+    "color": "green",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T19:21:25.502Z"
+  },
+  {
+    "period": 29503880,
+    "number": 5,
+    "color": "violet",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T19:22:26.935Z"
+  },
+  {
+    "period": 29503881,
+    "number": 9,
+    "color": "green",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T19:23:28.338Z"
+  },
+  {
+    "period": 29503882,
+    "number": 2,
+    "color": "red",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T19:24:29.738Z"
+  },
+  {
+    "period": 29503883,
+    "number": 9,
+    "color": "green",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T19:25:31.069Z"
+  },
+  {
+    "period": 29503884,
+    "number": 8,
+    "color": "red",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T19:26:32.488Z"
+  },
+  {
+    "period": 29503885,
+    "number": 1,
+    "color": "green",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T19:27:33.855Z"
+  },
+  {
+    "period": 29503886,
+    "number": 2,
+    "color": "red",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T19:28:35.165Z"
+  },
+  {
+    "period": 29503887,
+    "number": 7,
+    "color": "green",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T19:29:36.455Z"
+  },
+  {
+    "period": 29503888,
+    "number": 4,
+    "color": "red",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T19:30:37.783Z"
+  },
+  {
+    "period": 29503889,
+    "number": 9,
+    "color": "green",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T19:31:39.112Z"
+  },
+  {
+    "period": 29503890,
+    "number": 7,
+    "color": "green",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T19:32:40.469Z"
+  },
+  {
+    "period": 29503891,
+    "number": 9,
+    "color": "green",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T19:33:41.841Z"
+  },
+  {
+    "period": 29503892,
+    "number": 1,
+    "color": "green",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T19:34:43.183Z"
+  },
+  {
+    "period": 29503893,
+    "number": 5,
+    "color": "violet",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T19:35:44.552Z"
+  },
+  {
+    "period": 29503894,
+    "number": 1,
+    "color": "green",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T19:36:45.972Z"
+  },
+  {
+    "period": 29503895,
+    "number": 3,
+    "color": "green",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T19:37:47.304Z"
+  },
+  {
+    "period": 29503896,
+    "number": 2,
+    "color": "red",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T19:38:48.701Z"
+  },
+  {
+    "period": 29503897,
+    "number": 5,
+    "color": "violet",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T19:39:49.863Z"
+  },
+  {
+    "period": 29503898,
+    "number": 9,
+    "color": "green",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T19:40:51.206Z"
+  },
+  {
+    "period": 29503899,
+    "number": 3,
+    "color": "green",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T19:41:52.553Z"
+  },
+  {
+    "period": 29503900,
+    "number": 7,
+    "color": "green",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T19:42:53.928Z"
+  },
+  {
+    "period": 29503901,
+    "number": 5,
+    "color": "violet",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T19:43:55.353Z"
+  },
+  {
+    "period": 29503902,
+    "number": 9,
+    "color": "green",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T19:44:56.699Z"
+  },
+  {
+    "period": 29503903,
+    "number": 3,
+    "color": "green",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T19:45:58.058Z"
+  },
+  {
+    "period": 29503904,
+    "number": 5,
+    "color": "violet",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T19:46:59.417Z"
+  },
+  {
+    "period": 29503905,
+    "number": 7,
+    "color": "green",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T19:48:00.838Z"
+  },
+  {
+    "period": 29503906,
+    "number": 2,
+    "color": "red",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T19:49:02.239Z"
+  },
+  {
+    "period": 29503907,
+    "number": 9,
+    "color": "green",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T19:50:03.523Z"
+  },
+  {
+    "period": 29503908,
+    "number": 4,
+    "color": "red",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T19:51:04.871Z"
+  },
+  {
+    "period": 29503909,
+    "number": 4,
+    "color": "red",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T19:52:06.177Z"
+  },
+  {
+    "period": 29503910,
+    "number": 3,
+    "color": "green",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T19:53:07.528Z"
+  },
+  {
+    "period": 29503911,
+    "number": 9,
+    "color": "green",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T19:54:08.850Z"
+  },
+  {
+    "period": 29503912,
+    "number": 0,
+    "color": "violet",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T19:55:10.181Z"
+  },
+  {
+    "period": 29503913,
+    "number": 3,
+    "color": "green",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T19:56:11.511Z"
+  },
+  {
+    "period": 29503914,
+    "number": 5,
+    "color": "violet",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T19:57:12.733Z"
+  },
+  {
+    "period": 29503915,
+    "number": 8,
+    "color": "red",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T19:58:14.090Z"
+  },
+  {
+    "period": 29503916,
+    "number": 2,
+    "color": "red",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T19:59:15.383Z"
+  },
+  {
+    "period": 29503917,
+    "number": 6,
+    "color": "red",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T20:00:16.723Z"
+  },
+  {
+    "period": 29503918,
+    "number": 7,
+    "color": "green",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T20:01:18.108Z"
+  },
+  {
+    "period": 29503919,
+    "number": 6,
+    "color": "red",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T20:02:19.541Z"
+  },
+  {
+    "period": 29503920,
+    "number": 7,
+    "color": "green",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T20:03:20.939Z"
+  },
+  {
+    "period": 29503921,
+    "number": 9,
+    "color": "green",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T20:04:22.368Z"
+  },
+  {
+    "period": 29503922,
+    "number": 8,
+    "color": "red",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T20:05:23.607Z"
+  },
+  {
+    "period": 29503923,
+    "number": 1,
+    "color": "green",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T20:06:24.947Z"
+  },
+  {
+    "period": 29503924,
+    "number": 0,
+    "color": "violet",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T20:07:26.340Z"
+  },
+  {
+    "period": 29503925,
+    "number": 4,
+    "color": "red",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T20:08:27.863Z"
+  },
+  {
+    "period": 29503926,
+    "number": 9,
+    "color": "green",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T20:09:29.336Z"
+  },
+  {
+    "period": 29503927,
+    "number": 6,
+    "color": "red",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T20:10:30.740Z"
+  },
+  {
+    "period": 29503928,
+    "number": 3,
+    "color": "green",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T20:11:32.071Z"
+  },
+  {
+    "period": 29503929,
+    "number": 2,
+    "color": "red",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T20:12:33.439Z"
+  },
+  {
+    "period": 29503930,
+    "number": 1,
+    "color": "green",
+    "bigSmall": "small",
+    "timestamp": "2026-02-04T20:13:34.755Z"
+  },
+  {
+    "period": 29503931,
+    "number": 7,
+    "color": "green",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T20:14:36.134Z"
+  },
+  {
+    "period": 29503932,
+    "number": 9,
+    "color": "green",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T20:15:37.497Z"
+  },
+  {
+    "period": 29503933,
+    "number": 6,
+    "color": "red",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T20:16:38.806Z"
+  },
+  {
+    "period": 29503934,
+    "number": 7,
+    "color": "green",
+    "bigSmall": "big",
+    "timestamp": "2026-02-04T20:17:40.123Z"
+  }
+]
